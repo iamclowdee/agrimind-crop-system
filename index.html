@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AgriMind – Crop Recommendation System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,500;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="blob" style="width:500px;height:500px;background:#52B788;top:-160px;left:-100px"></div>
+<div class="blob" style="width:400px;height:400px;background:#F6C90E;top:400px;right:-160px;animation-delay:-4s"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo" onclick="showPage('landing')">
+    <div class="nav-logo-icon">🌱</div> AgriMind
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="showPage('landing')">Home</button>
+    <button class="nav-link" onclick="requireAuth('dashboard')">Dashboard</button>
+    <button class="nav-link" onclick="requireAuth('history')">History</button>
+    <button class="nav-link" onclick="requireAuth('soil')">Soil Health</button>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">🌙</button>
+    <!-- Guest buttons -->
+    <div id="nav-guest" style="display:flex;gap:6px;align-items:center">
+      <button class="nav-link-auth" onclick="showPage('login')">Sign In</button>
+      <button class="nav-cta" onclick="showPage('signup')">Get Started</button>
+    </div>
+    <!-- Auth user -->
+    <div id="nav-user" style="display:none" class="avatar-wrap">
+      <button class="user-avatar-nav" id="nav-avatar" onclick="toggleDropdown()"></button>
+      <div class="avatar-dropdown" id="avatar-dropdown" style="display:none">
+        <div class="avatar-dropdown-user">
+          <div class="avatar-dropdown-name" id="dd-name"></div>
+          <div class="avatar-dropdown-email" id="dd-email"></div>
+        </div>
+        <button class="dd-item" onclick="openProfile();closeDropdown()">👤 My Profile</button>
+        <button class="dd-item" onclick="openSettings();closeDropdown()">⚙️ Settings</button>
+        <button class="dd-item danger" onclick="confirmLogout();closeDropdown()">🚪 Logout</button>
+      </div>
+    </div>
+    <button class="hamburger" onclick="openMobileSidebar()" id="hamburger-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE SIDEBAR -->
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileSidebar()"></div>
+<div class="mobile-sidebar" id="mobile-sidebar" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div style="font-weight:800;font-size:15px;color:#fff">🌱 AgriMind</div>
+    <button onclick="closeMobileSidebar()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px">✕</button>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <button class="sidebar-item" onclick="showPage('landing');closeMobileSidebar()"><span class="icon">🏠</span> Home</button>
+    <button class="sidebar-item" onclick="requireAuth('dashboard');closeMobileSidebar()"><span class="icon">📊</span> Dashboard</button>
+    <button class="sidebar-item" onclick="requireAuth('history');closeMobileSidebar()"><span class="icon">📅</span> Crop History</button>
+    <button class="sidebar-item" onclick="requireAuth('soil');closeMobileSidebar()"><span class="icon">🧪</span> Soil Health</button>
+    <div style="height:1px;background:rgba(255,255,255,.15);margin:10px 0"></div>
+    <button class="sidebar-item" id="mob-signin" onclick="showPage('login');closeMobileSidebar()"><span class="icon">🔑</span> Sign In</button>
+    <button class="sidebar-item" id="mob-signup" onclick="showPage('signup');closeMobileSidebar()"><span class="icon">✨</span> Get Started</button>
+    <button class="sidebar-item" id="mob-logout" style="display:none" onclick="confirmLogout();closeMobileSidebar()"><span class="icon">🚪</span> Logout</button>
+  </div>
+</div>
+
+<!-- ══════════ LANDING ══════════ -->
+<div id="page-landing" class="page active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge fade-up">🌾 Smart Crop Recommendation System</div>
+      <h1 class="hero-title fade-up" style="animation-delay:.1s">Grow Smarter with<br><em>Intelligent</em> Crop Insights</h1>
+      <p class="hero-sub fade-up" style="animation-delay:.2s">AgriMind uses soil science and data analysis to recommend the perfect crops for your land — maximizing yield, profit, and sustainability.</p>
+      <div class="hero-btns fade-up" style="animation-delay:.3s">
+        <button class="btn-primary" onclick="requireAuth('dashboard')">🚜 Get Recommendation</button>
+        <button class="btn-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Learn More ↓</button>
+      </div>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num">22+</span><div class="stat-label">Crops Supported</div></div>
+    <div class="stat-item"><span class="stat-num">94%</span><div class="stat-label">Accuracy Rate</div></div>
+    <div class="stat-item"><span class="stat-num">12K+</span><div class="stat-label">Farmers Served</div></div>
+    <div class="stat-item"><span class="stat-num">₹2.4Cr</span><div class="stat-label">Profit Generated</div></div>
+  </div>
+  <div class="section" id="features">
+    <div class="section-tag">✨ Features</div>
+    <h2 class="section-title">Everything You Need to Farm Intelligently</h2>
+    <p class="section-sub">From soil analysis to profit forecasting, AgriMind gives you the complete agriculture toolkit.</p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon" style="background:var(--green4)">🌾</div><div class="feature-title">Crop Recommendation</div><div class="feature-desc">Precise crop suggestions based on N-P-K, pH, temperature, humidity and rainfall data.</div></div>
+      <div class="feature-card"><div class="feature-icon" style="background:#FFF3CD">🧪</div><div class="feature-title">Soil Health Analysis</div><div class="feature-desc">Visualize nutrient balance, pH levels, and soil quality scores with animated charts.</div></div>
+      <div class="feature-card"><div class="feature-icon" style="background:#FFE8D6">💰</div><div class="feature-title">Profit & Loss Tracking</div><div class="feature-desc">Track investment and revenue in INR — unlocked only after you confirm a crop was grown.</div></div>
+      <div class="feature-card"><div class="feature-icon" style="background:#EAD7F7">📅</div><div class="feature-title">Seasonal Calendar</div><div class="feature-desc">Know exactly when to sow, grow, and harvest with seasonal recommendations.</div></div>
+      <div class="feature-card"><div class="feature-icon" style="background:#D1ECF1">📊</div><div class="feature-title">Crop History & Analytics</div><div class="feature-desc">Track past crops with cost comparisons, yield analytics, and profit trend graphs.</div></div>
+      <div class="feature-card"><div class="feature-icon" style="background:#FDECEA">📄</div><div class="feature-title">PDF Report Export</div><div class="feature-desc">Download professional reports with crop recommendation, soil analysis, and profit summary.</div></div>
+    </div>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="section-tag">❓ FAQ</div>
+    <h2 class="section-title">Common Questions</h2>
+    <div style="max-width:600px">
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">How accurate is AgriMind's recommendation? <span class="faq-arrow">⌄</span></div><div class="faq-a">Our model achieves 94% accuracy on the Crop Recommendation dataset using ensemble methods trained on thousands of real-world soil samples.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">What inputs does the system need? <span class="faq-arrow">⌄</span></div><div class="faq-a">You need N, P, K values from a soil test, temperature (°C), humidity (%), pH, and rainfall (mm). Enter manually or connect IoT sensors.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">When does profit data appear? <span class="faq-arrow">⌄</span></div><div class="faq-a">Profit analytics only appear after you mark a crop as grown and enter your actual revenue — keeping your data accurate.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">Is my data saved? <span class="faq-arrow">⌄</span></div><div class="faq-a">Yes — your recommendations, crop history, and profile are saved locally in your browser and persist across sessions until you log out.</div></div>
+    </div>
+  </div>
+  <footer>
+    <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:5px">🌱 AgriMind</div>
+    <div>B.Tech CSE Major Project · Crop Recommendation System</div>
+    <div style="margin-top:5px;opacity:.5">© 2025 AgriMind.</div>
+  </footer>
+</div>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="page-login" class="page">
+  <div class="auth-page">
+    <div class="auth-card fade-up">
+      <div style="text-align:center;margin-bottom:22px"><div style="font-size:30px;margin-bottom:9px">🌱</div><div class="auth-title">Welcome back</div><div class="auth-sub">Sign in to your AgriMind account</div></div>
+      <div class="form-group">
+        <label class="form-label">Email or Phone Number</label>
+        <input class="form-input" id="login-id" type="text" placeholder="email@example.com or 9876543210" oninput="clearFieldError('login-id-err')"/>
+        <div class="field-error" id="login-id-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="form-input-wrap">
+          <input class="form-input" id="login-pwd" type="password" placeholder="Enter your password" oninput="clearFieldError('login-pwd-err')"/>
+          <button class="pwd-toggle" onclick="togglePwd('login-pwd',this)">👁</button>
+        </div>
+        <div class="field-error" id="login-pwd-err"></div>
+      </div>
+      <div id="login-banner" class="alert alert-warning" style="display:none"></div>
+      <button class="btn-full" onclick="doLogin()">Sign In →</button>
+      <div class="auth-switch">Don't have an account? <a onclick="showPage('signup')">Create one</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SIGNUP ══════════ -->
+<div id="page-signup" class="page">
+  <div class="auth-page">
+    <div class="auth-card fade-up">
+      <div style="text-align:center;margin-bottom:22px"><div style="font-size:30px;margin-bottom:9px">🌱</div><div class="auth-title">Create your account</div><div class="auth-sub">Start farming smarter with AgriMind</div></div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="su-name" type="text" placeholder="Your full name" oninput="clearFieldError('su-name-err')"/>
+        <div class="field-error" id="su-name-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="su-email" type="email" placeholder="you@example.com" oninput="clearFieldError('su-email-err')"/>
+        <div class="field-error" id="su-email-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" id="su-phone" type="tel" placeholder="10-digit Indian number" maxlength="10" oninput="clearFieldError('su-phone-err')"/>
+        <div class="field-error" id="su-phone-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="form-input-wrap">
+          <input class="form-input" id="su-pwd" type="password" placeholder="Minimum 8 characters" oninput="checkStrength();clearFieldError('su-pwd-err')"/>
+          <button class="pwd-toggle" onclick="togglePwd('su-pwd',this)">👁</button>
+        </div>
+        <div class="pwd-strength" id="pwd-strength-wrap" style="display:none">
+          <div class="pwd-strength-bars">
+            <div class="pwd-bar" id="bar1"></div><div class="pwd-bar" id="bar2"></div>
+            <div class="pwd-bar" id="bar3"></div><div class="pwd-bar" id="bar4"></div>
+          </div>
+          <div class="pwd-strength-label" id="pwd-strength-label"></div>
+        </div>
+        <div class="field-error" id="su-pwd-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="form-input-wrap">
+          <input class="form-input" id="su-pwd2" type="password" placeholder="Re-enter your password" oninput="clearFieldError('su-pwd2-err')"/>
+          <button class="pwd-toggle" onclick="togglePwd('su-pwd2',this)">👁</button>
+        </div>
+        <div class="field-error" id="su-pwd2-err"></div>
+      </div>
+      <div id="su-banner" class="alert alert-warning" style="display:none"></div>
+      <button class="btn-full" onclick="doSignup()">Create Account →</button>
+      <div class="auth-switch">Already have an account? <a onclick="showPage('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div id="page-dashboard" class="page">
+  <div class="dash-layout">
+    <div class="sidebar">
+      <div class="sidebar-logo">🌱 AgriMind</div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <button class="sidebar-item active" id="sb-overview" onclick="showDashSection('overview',this)"><span class="icon">📊</span> Overview</button>
+        <button class="sidebar-item" id="sb-rec" onclick="showDashSection('rec',this)"><span class="icon">🌾</span> Crop Recommendation</button>
+        <button class="sidebar-item" id="sb-map" onclick="showDashSection('map',this)"><span class="icon">🗺</span> Farm Location</button>
+        <button class="sidebar-item" id="sb-report" onclick="showDashSection('report',this)"><span class="icon">📄</span> PDF Report</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Records</div>
+        <button class="sidebar-item" onclick="showPage('history')"><span class="icon">📅</span> Crop History</button>
+        <button class="sidebar-item" onclick="showPage('soil')"><span class="icon">🧪</span> Soil Health</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Account</div>
+        <button class="sidebar-item" onclick="showPage('landing')"><span class="icon">🏠</span> Home</button>
+        <button class="sidebar-item" onclick="openProfile()"><span class="icon">👤</span> My Profile</button>
+        <button class="sidebar-item" onclick="confirmLogout()"><span class="icon">🚪</span> Logout</button>
+      </div>
+    </div>
+    <div class="dash-main">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-welcome" id="dash-greeting">Good morning, <span id="dash-username">Farmer</span>! 👋</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">📋 Fill the recommendation form to get crop suggestions</div>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+          <div class="user-avatar-dash" id="dash-avatar"></div>
+        </div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-card"><div class="metric-label">🌾 Last Recommendation</div><div id="m-rec" class="metric-null">—</div><div class="metric-sub" id="m-rec-sub">No recommendation yet</div></div>
+        <div class="metric-card"><div class="metric-label">💰 Net Profit</div><div id="m-profit" class="metric-null">—</div><div class="metric-sub" id="m-profit-sub">Confirm crop to see profit</div></div>
+        <div class="metric-card"><div class="metric-label">🧪 Soil Score</div><div id="m-soil" class="metric-null">—</div><div class="metric-sub" id="m-soil-sub">Submit form to analyze</div></div>
+        <div class="metric-card"><div class="metric-label">📅 Crops Grown</div><div id="m-crops" class="metric-val">0</div><div class="metric-sub">Confirmed entries</div></div>
+      </div>
+      <!-- OVERVIEW -->
+      <div id="ds-overview">
+        <div class="alert alert-info">🌱 Welcome! Go to <strong>Crop Recommendation</strong> in the sidebar to get started.</div>
+        <div class="card">
+          <div class="card-title">📅 Seasonal Calendar</div>
+          <div class="card-sub">Planting windows for your region</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+            <div style="text-align:center;padding:10px 4px;border-radius:8px;background:var(--green4);border:1px solid rgba(82,183,136,.2)"><div style="font-size:10px;font-weight:700;color:var(--green)">KHARIF</div><div style="font-size:10px;color:var(--text3);margin-top:3px">Jun–Oct</div><div style="font-size:15px;margin-top:4px">🌾</div></div>
+            <div style="text-align:center;padding:10px 4px;border-radius:8px;background:var(--beige);border:1px solid var(--beige2)"><div style="font-size:10px;font-weight:700;color:var(--text2)">RABI</div><div style="font-size:10px;color:var(--text3);margin-top:3px">Nov–Mar</div><div style="font-size:15px;margin-top:4px">🌿</div></div>
+            <div style="text-align:center;padding:10px 4px;border-radius:8px;background:var(--beige);border:1px solid var(--beige2)"><div style="font-size:10px;font-weight:700;color:var(--text2)">ZAID</div><div style="font-size:10px;color:var(--text3);margin-top:3px">Mar–Jun</div><div style="font-size:15px;margin-top:4px">🥦</div></div>
+            <div style="text-align:center;padding:10px 4px;border-radius:8px;background:var(--beige);border:1px solid var(--beige2)"><div style="font-size:10px;font-weight:700;color:var(--text2)">PERENNIAL</div><div style="font-size:10px;color:var(--text3);margin-top:3px">Year round</div><div style="font-size:15px;margin-top:4px">🌳</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- REC FORM -->
+      <div id="ds-rec" style="display:none">
+        <div class="card">
+          <div class="card-title">🌾 Crop Recommendation Form</div>
+          <div class="card-sub">Enter soil and environment parameters</div>
+          <div class="toggle-row">
+            <div><div style="font-size:12px;font-weight:700;color:var(--green)">📡 Live IoT Sensor Data</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Auto-fill from connected sensors</div></div>
+            <label class="toggle-switch"><input type="checkbox" onchange="toggleIoT(this.checked)"/><div class="slider-track"></div></label>
+          </div>
+          <div class="rec-form">
+            <div class="input-row"><div class="input-label">🟫 Nitrogen <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-n" type="number" placeholder="0–140"/></div>
+            <div class="input-row"><div class="input-label">🟤 Phosphorus <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-p" type="number" placeholder="0–145"/></div>
+            <div class="input-row"><div class="input-label">🟡 Potassium <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-k" type="number" placeholder="0–205"/></div>
+            <div class="input-row"><div class="input-label">🌡 Temperature <span class="unit-tag">°C</span></div><input class="styled-input" id="f-temp" type="number" placeholder="8–44"/></div>
+            <div class="input-row"><div class="input-label">💧 Humidity <span class="unit-tag">%</span></div><input class="styled-input" id="f-hum" type="number" placeholder="14–100"/></div>
+            <div class="input-row"><div class="input-label">⚗️ pH Value</div><input class="styled-input" id="f-ph" type="number" step="0.1" placeholder="3.5–10"/></div>
+            <div class="input-row"><div class="input-label">🌧 Rainfall <span class="unit-tag">mm</span></div><input class="styled-input" id="f-rain" type="number" placeholder="20–299"/></div>
+            <div class="input-row"><div class="input-label">🏔 Soil Type</div><select class="styled-input styled-select" id="f-soil"><option value="">Select type</option><option>Alluvial Soil</option><option>Black Soil</option><option>Red Soil</option><option>Laterite Soil</option><option>Sandy Soil</option><option>Clay Soil</option></select></div>
+            <div class="input-row"><div class="input-label">📐 Field Area <span class="unit-tag">acres</span></div><input class="styled-input" id="f-area" type="number" placeholder="1–100"/></div>
+          </div>
+          <div id="form-error" class="alert alert-warning" style="display:none;margin-top:12px">⚠️ Please fill in all fields.</div>
+          <div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn-primary" id="rec-btn" onclick="getRecommendation()">🌾 Get Recommendation</button>
+            <button class="btn-ghost" onclick="clearRecForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+      <!-- MAP -->
+      <div id="ds-map" style="display:none">
+        <div class="card">
+          <div class="card-title">🗺 Farm Location</div>
+          <div class="card-sub">Registered farm location and weather data</div>
+          <div class="map-container"><div class="map-grid"></div><div style="text-align:center;z-index:1"><div style="font-size:40px;animation:float 3s ease-in-out infinite">📍</div><div style="background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-radius:9px;padding:8px 16px;margin-top:8px;font-size:12px;font-weight:600;color:#1A2E1A">Siliguri, West Bengal, India<br><span style="font-size:10px;color:#7A9E77;font-weight:400">26.7271° N, 88.3953° E</span></div></div></div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
+            <div class="weather-chip">🌡 26°C <span style="color:var(--text3);font-size:10px;margin-left:3px">Temp</span></div>
+            <div class="weather-chip">💧 82% <span style="color:var(--text3);font-size:10px;margin-left:3px">Humidity</span></div>
+            <div class="weather-chip">🌧 202mm <span style="color:var(--text3);font-size:10px;margin-left:3px">Rainfall</span></div>
+            <div class="weather-chip">☁️ Partly Cloudy</div>
+          </div>
+        </div>
+      </div>
+      <!-- REPORT -->
+      <div id="ds-report" style="display:none">
+        <div class="card">
+          <div class="card-title">📄 PDF Report</div>
+          <div class="card-sub">Download your complete crop recommendation report</div>
+          <div id="pdf-no-data" class="empty-state"><div class="empty-icon">📄</div><div class="empty-title">No report available</div><div class="empty-sub">Submit the recommendation form first to generate a report.</div><button class="btn-primary" style="margin-top:16px;font-size:12px;padding:9px 18px" onclick="showDashSection('rec',document.getElementById('sb-rec'))">Go to Form →</button></div>
+          <div id="pdf-ready" style="display:none">
+            <div style="background:var(--green4);border:1px solid rgba(82,183,136,.18);border-radius:11px;padding:18px;margin-bottom:16px">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px;padding-bottom:12px;border-bottom:2px solid rgba(82,183,136,.2)"><div style="font-size:24px">🌱</div><div><div style="font-weight:800;font-size:14px;color:var(--green)">AgriMind Crop Report</div><div id="pdf-date" style="font-size:11px;color:var(--text3)"></div></div></div>
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <div style="height:8px;background:var(--beige2);border-radius:3px;width:100%"></div>
+                <div style="height:8px;background:var(--beige2);border-radius:3px;width:78%"></div>
+                <div style="height:8px;background:rgba(82,183,136,.3);border-radius:3px;width:60%"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:9px"><button class="btn-primary" style="font-size:12px;padding:10px 18px" onclick="downloadPDF()">📥 Download PDF</button><button class="btn-ghost">🔗 Share</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RESULT ══════════ -->
+<div id="page-result" class="page">
+  <div style="max-width:900px;margin:0 auto;padding:24px 20px">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:20px">
+      <button onclick="showPage('dashboard')" class="btn-ghost">← Back</button>
+      <div style="font-size:17px;font-weight:700;color:var(--text)">🌾 Recommendation Result</div>
+    </div>
+    <div class="result-hero fade-up">
+      <div class="crop-emoji" id="result-emoji">🌾</div>
+      <div style="flex:1">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Best Crop Match</div>
+        <div class="crop-name" id="result-name">Rice</div>
+        <div style="margin-top:9px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:3px"><span>Confidence</span><span id="result-conf-val" style="font-weight:700;color:var(--green)">94%</span></div><div class="confidence-bar-bg"><div class="confidence-bar" id="result-conf-bar" style="width:94%"></div></div></div>
+        <div class="season-pills"><span class="season-pill" style="background:rgba(82,183,136,.18);color:var(--green)" id="result-season">🌱 June–October</span><span class="season-pill" style="background:rgba(246,201,14,.13);color:#7A6000" id="result-type">☀️ Kharif</span><span class="season-pill" style="background:rgba(45,106,79,.1);color:var(--green)" id="result-dur">⏱ 90–120 days</span></div>
+      </div>
+    </div>
+    <div id="mark-grown-banner" class="alert alert-info" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div><strong>Did you decide to grow this crop?</strong><div style="font-size:11px;margin-top:2px;opacity:.8">Mark it as grown to track it and unlock profit analytics.</div></div>
+      <button class="btn-primary" style="font-size:11px;padding:8px 16px;white-space:nowrap" onclick="openGrownModal()">✅ Mark as Grown</button>
+    </div>
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-title">🌿 Maintenance Tips</div>
+        <div class="card-sub">Key practices for optimal yield</div>
+        <ul class="tip-list" id="result-tips"></ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🧪 Soil Suitability</div>
+        <div class="card-sub">How well your soil matches requirements</div>
+        <div style="text-align:center;margin:10px 0">
+          <svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--beige2)" stroke-width="8"/><circle cx="50" cy="50" r="42" fill="none" stroke="var(--green2)" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="70" transform="rotate(-90 50 50)"/></svg>
+          <div style="font-size:26px;font-weight:800;color:var(--green);margin-top:-62px;position:relative;z-index:1" id="result-score">78</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:41px">out of 100</div>
+        </div>
+        <div>
+          <div class="prog-row"><div class="prog-label">pH Match</div><div class="prog-bg"><div class="prog-fill" style="width:92%;background:linear-gradient(90deg,var(--green2),var(--green))"></div></div><div class="prog-val">92%</div></div>
+          <div class="prog-row"><div class="prog-label">Moisture</div><div class="prog-bg"><div class="prog-fill" style="width:85%;background:linear-gradient(90deg,var(--green2),var(--green))"></div></div><div class="prog-val">85%</div></div>
+          <div class="prog-row"><div class="prog-label">Nutrients</div><div class="prog-bg"><div class="prog-fill" style="width:70%;background:linear-gradient(90deg,#F6C90E,var(--orange))"></div></div><div class="prog-val">70%</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn-primary" style="font-size:12px;padding:10px 18px" onclick="downloadPDF()">📥 Download Report</button>
+      <button class="btn-ghost" onclick="showPage('history')">📅 View History →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HISTORY ══════════ -->
+<div id="page-history" class="page">
+  <div style="max-width:900px;margin:0 auto;padding:24px 20px">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:20px">
+      <button onclick="showPage('dashboard')" class="btn-ghost">← Back</button>
+      <div style="font-size:17px;font-weight:700;color:var(--text)">📅 Crop History</div>
+    </div>
+    <div id="history-empty" class="card" style="text-align:center;padding:48px 20px">
+      <div style="font-size:44px;opacity:.4;margin-bottom:12px">🌱</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:7px">No crop history yet</div>
+      <div style="font-size:12px;color:var(--text3);max-width:260px;margin:0 auto;line-height:1.6">Get a recommendation and mark a crop as grown to build your history and unlock analytics.</div>
+      <button class="btn-primary" style="margin-top:18px;font-size:12px;padding:10px 20px" onclick="showPage('dashboard');showDashSection('rec',document.getElementById('sb-rec'))">🌾 Get Recommendation</button>
+    </div>
+    <div id="history-list" style="display:none">
+      <div id="history-entries"></div>
+      <div id="history-analytics" style="display:none;margin-top:20px">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">📊 Analytics</div>
+        <div class="dash-grid">
+          <div class="card"><div class="card-title">💰 Cost vs Revenue</div><div class="card-sub">Investment vs actual revenue</div><div id="chart-cost" style="height:190px"></div></div>
+          <div class="card"><div class="card-title">📈 Profit Trend</div><div class="card-sub">Net profit across crops</div><div id="chart-profit" style="height:190px"></div></div>
+        </div>
+      </div>
+      <div id="history-pending-notice" style="display:none;margin-top:12px" class="alert alert-warning">⏳ Some crops are pending revenue. Update them to unlock analytics.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SOIL ══════════ -->
+<div id="page-soil" class="page">
+  <div style="max-width:900px;margin:0 auto;padding:24px 20px">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:20px">
+      <button onclick="showPage('dashboard')" class="btn-ghost">← Back</button>
+      <div style="font-size:17px;font-weight:700;color:var(--text)">🧪 Soil Health</div>
+    </div>
+    <div id="soil-empty" class="card" style="text-align:center;padding:48px 20px">
+      <div style="font-size:44px;opacity:.4;margin-bottom:12px">🧪</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:7px">No soil data yet</div>
+      <div style="font-size:12px;color:var(--text3);max-width:260px;margin:0 auto;line-height:1.6">Submit the recommendation form with your soil parameters to see soil health analysis here.</div>
+      <button class="btn-primary" style="margin-top:18px;font-size:12px;padding:10px 20px" onclick="showPage('dashboard');showDashSection('rec',document.getElementById('sb-rec'))">Fill the Form</button>
+    </div>
+    <div id="soil-data" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+        <div class="soil-card"><div class="radial-wrap"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--beige2)" stroke-width="7"/><circle cx="40" cy="40" r="32" fill="none" stroke="#52B788" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" id="sr-n" stroke-dashoffset="57" transform="rotate(-90 40 40)"/></svg><div class="radial-center"><div class="radial-val" id="sv-n">90</div></div></div><div class="nutrient-name">Nitrogen (N)</div><span class="nutrient-status status-good" id="ss-n">Optimal</span></div>
+        <div class="soil-card"><div class="radial-wrap"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--beige2)" stroke-width="7"/><circle cx="40" cy="40" r="32" fill="none" stroke="#E07A2F" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" id="sr-p" stroke-dashoffset="120" transform="rotate(-90 40 40)"/></svg><div class="radial-center"><div class="radial-val" id="sv-p" style="color:var(--orange)">42</div></div></div><div class="nutrient-name">Phosphorus (P)</div><span class="nutrient-status status-low" id="ss-p">Low</span></div>
+        <div class="soil-card"><div class="radial-wrap"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--beige2)" stroke-width="7"/><circle cx="40" cy="40" r="32" fill="none" stroke="#52B788" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" id="sr-k" stroke-dashoffset="90" transform="rotate(-90 40 40)"/></svg><div class="radial-center"><div class="radial-val" id="sv-k">43</div></div></div><div class="nutrient-name">Potassium (K)</div><span class="nutrient-status status-good">Good</span></div>
+        <div class="soil-card"><div class="radial-wrap"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--beige2)" stroke-width="7"/><circle cx="40" cy="40" r="32" fill="none" stroke="#52B788" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" id="sr-ph" stroke-dashoffset="38" transform="rotate(-90 40 40)"/></svg><div class="radial-center"><div class="radial-val" id="sv-ph">6.5</div></div></div><div class="nutrient-name">pH Level</div><span class="nutrient-status status-good">Neutral</span></div>
+        <div class="soil-card"><div class="radial-wrap"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--beige2)" stroke-width="7"/><circle cx="40" cy="40" r="32" fill="none" stroke="#52B788" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" id="sr-hum" stroke-dashoffset="16" transform="rotate(-90 40 40)"/></svg><div class="radial-center"><div class="radial-val" id="sv-hum">82</div></div></div><div class="nutrient-name">Humidity %</div><span class="nutrient-status status-good">Good</span></div>
+      </div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-title">⚗️ pH Scale</div><div class="card-sub">Your pH vs ideal range</div>
+          <div style="margin:12px 0">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:3px"><span>Acidic (0)</span><span>Neutral (7)</span><span>Alkaline (14)</span></div>
+            <div style="height:20px;border-radius:9px;background:linear-gradient(90deg,#E63946,#F4A261,#2A9D8F,#264653);position:relative"><div id="ph-marker" style="position:absolute;left:46%;top:-3px;width:13px;height:26px;background:var(--text);border-radius:3px;border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.22)"></div></div>
+            <div id="ph-label-text" style="margin-top:7px;text-align:center;font-size:11px;color:var(--text2)">pH: <strong>6.5</strong> ✅</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Soil Quality Score</div><div class="card-sub">Overall health assessment</div>
+          <div style="text-align:center;margin:10px 0"><div style="font-size:38px;font-weight:800;color:var(--green)" id="soil-score">78</div><div style="font-size:11px;color:var(--text3)">out of 100</div><div style="font-size:11px;font-weight:700;color:var(--green);background:var(--green4);padding:4px 13px;border-radius:50px;display:inline-block;margin-top:7px">Good Condition</div></div>
+          <div><div class="prog-row"><div class="prog-label">Nitrogen</div><div class="prog-bg"><div class="prog-fill" id="sp-n" style="width:64%;background:linear-gradient(90deg,var(--green2),var(--green))"></div></div><div class="prog-val" id="spv-n">90</div></div><div class="prog-row"><div class="prog-label">Phosphorus</div><div class="prog-bg"><div class="prog-fill" id="sp-p" style="width:29%;background:linear-gradient(90deg,#F6C90E,var(--orange))"></div></div><div class="prog-val" id="spv-p">42</div></div><div class="prog-row"><div class="prog-label">Potassium</div><div class="prog-bg"><div class="prog-fill" id="sp-k" style="width:21%;background:linear-gradient(90deg,var(--green2),var(--green))"></div></div><div class="prog-val" id="spv-k">43</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+<!-- Mark as Grown -->
+<div id="modal-grown" style="display:none" class="modal-bg">
+  <div class="modal">
+    <div class="modal-title">✅ Mark Crop as Grown</div>
+    <div class="modal-sub">Confirm you grew <strong id="mgrown-crop"></strong> and enter your investment details.</div>
+    <div class="form-group"><label class="form-label">Total Investment (₹)</label><input class="form-input" id="mg-invest" type="number" placeholder="e.g. 42500"/></div>
+    <div class="form-group"><label class="form-label">Field Area (acres)</label><input class="form-input" id="mg-area" type="number" placeholder="e.g. 5"/></div>
+    <div class="form-group"><label class="form-label">Duration (days)</label><input class="form-input" id="mg-days" type="number" placeholder="e.g. 110"/></div>
+    <div class="alert alert-info" style="font-size:11px">💡 Add revenue after harvest to unlock profit analytics.</div>
+    <div class="modal-actions"><button class="btn-ghost" onclick="closeModal('modal-grown')">Cancel</button><button class="btn-primary" style="font-size:12px;padding:9px 18px" onclick="saveGrownEntry()">Save →</button></div>
+  </div>
+</div>
+
+<!-- Revenue -->
+<div id="modal-revenue" style="display:none" class="modal-bg">
+  <div class="modal">
+    <div class="modal-title">💰 Update Revenue</div>
+    <div class="modal-sub">Enter actual revenue to unlock profit analytics for <strong id="mrev-crop"></strong>.</div>
+    <div class="form-group"><label class="form-label">Actual Revenue (₹)</label><input class="form-input" id="mr-revenue" type="number" placeholder="e.g. 125000"/></div>
+    <div class="form-group"><label class="form-label">Selling Price per Quintal (₹) <span style="font-size:10px;color:var(--text3)">optional</span></label><input class="form-input" id="mr-price" type="number" placeholder="e.g. 2500"/></div>
+    <div class="modal-actions"><button class="btn-ghost" onclick="closeModal('modal-revenue')">Cancel</button><button class="btn-primary" style="font-size:12px;padding:9px 18px" onclick="saveRevenue()">Update →</button></div>
+  </div>
+</div>
+
+<!-- Logout Confirm -->
+<div id="modal-logout" style="display:none" class="modal-bg">
+  <div class="modal" style="max-width:340px;text-align:center">
+    <div style="font-size:36px;margin-bottom:12px">🚪</div>
+    <div class="modal-title">Log out of AgriMind?</div>
+    <div class="modal-sub" style="margin-top:6px">Your data will be saved and you can log back in anytime.</div>
+    <div class="modal-actions" style="justify-content:center;gap:10px">
+      <button class="btn-ghost" onclick="closeModal('modal-logout')">Cancel</button>
+      <button class="btn-primary" style="background:#C0392B;font-size:13px;padding:10px 22px" onclick="doLogout()">Yes, Log Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="modal-profile" style="display:none" class="modal-bg">
+  <div class="modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="modal-title">👤 My Profile</div>
+      <button class="btn-ghost" style="font-size:12px" onclick="closeModal('modal-profile')">✕ Close</button>
+    </div>
+    <div id="profile-view">
+      <div class="modal-section">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+          <div class="profile-avatar" id="profile-avatar-big"></div>
+          <div><div style="font-size:16px;font-weight:700;color:var(--text)" id="profile-fullname"></div><div style="font-size:12px;color:var(--text3)" id="profile-emailshow"></div></div>
+        </div>
+        <div class="modal-section-title">Personal Info</div>
+        <div class="profile-field"><span class="profile-field-label">Full Name</span><span class="profile-field-val" id="pf-name"></span></div>
+        <div class="profile-field"><span class="profile-field-label">Email</span><span class="profile-field-val" id="pf-email"></span></div>
+        <div class="profile-field"><span class="profile-field-label">Phone</span><span class="profile-field-val" id="pf-phone"></span></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Farm Details</div>
+        <div class="profile-field"><span class="profile-field-label">Farm Name</span><span class="profile-field-val" id="pf-farm" style="color:var(--text3)">Not set</span></div>
+        <div class="profile-field"><span class="profile-field-label">Village/District</span><span class="profile-field-val" id="pf-location" style="color:var(--text3)">Not set</span></div>
+        <div class="profile-field"><span class="profile-field-label">Total Land</span><span class="profile-field-val" id="pf-land" style="color:var(--text3)">Not set</span></div>
+      </div>
+      <button class="btn-primary" style="width:100%;font-size:13px;padding:11px;justify-content:center" onclick="switchToEditProfile()">✏️ Edit Profile</button>
+    </div>
+    <div id="profile-edit" style="display:none">
+      <div class="modal-section-title">Edit Profile</div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="pe-name" type="text"/></div>
+      <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" id="pe-phone" type="tel" maxlength="10"/></div>
+      <div class="form-group"><label class="form-label">Farm Name</label><input class="form-input" id="pe-farm" type="text" placeholder="e.g. Krishna Farms"/></div>
+      <div class="form-group"><label class="form-label">Village / District</label><input class="form-input" id="pe-location" type="text" placeholder="e.g. Siliguri, WB"/></div>
+      <div class="form-group"><label class="form-label">Total Land Owned <span style="font-size:10px;color:var(--text3)">(acres)</span></label><input class="form-input" id="pe-land" type="number" placeholder="e.g. 10"/></div>
+      <div class="modal-actions"><button class="btn-ghost" onclick="switchToViewProfile()">Cancel</button><button class="btn-primary" style="font-size:12px;padding:9px 18px" onclick="saveProfile()">Save Changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="modal-settings" style="display:none" class="modal-bg">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <div style="font-size:36px;margin-bottom:12px">⚙️</div>
+    <div class="modal-title">Settings</div>
+    <div style="font-size:13px;color:var(--text3);margin:10px 0 20px;line-height:1.6">Settings are coming soon! Backend integration will unlock notification preferences, unit settings, and more.</div>
+    <button class="btn-full" onclick="closeModal('modal-settings')">Got it</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="display:none" class="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
