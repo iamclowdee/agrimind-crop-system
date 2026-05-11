@@ -84,7 +84,7 @@
   </div>
   <div class="stats-bar">
     <div class="stat-item"><span class="stat-num">22+</span><div class="stat-label">Crops Supported</div></div>
-    <div class="stat-item"><span class="stat-num">94%</span><div class="stat-label">Accuracy Rate</div></div>
+    <div class="stat-item"><span class="stat-num">ML</span><div class="stat-label">Training Ready</div></div>
     <div class="stat-item"><span class="stat-num">12K+</span><div class="stat-label">Farmers Served</div></div>
     <div class="stat-item"><span class="stat-num">₹2.4Cr</span><div class="stat-label">Profit Generated</div></div>
   </div>
@@ -105,8 +105,8 @@
     <div class="section-tag">❓ FAQ</div>
     <h2 class="section-title">Common Questions</h2>
     <div style="max-width:600px">
-      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">How accurate is AgriMind's recommendation? <span class="faq-arrow">⌄</span></div><div class="faq-a">Our model achieves 94% accuracy on the Crop Recommendation dataset using ensemble methods trained on thousands of real-world soil samples.</div></div>
-      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">What inputs does the system need? <span class="faq-arrow">⌄</span></div><div class="faq-a">You need N, P, K values from a soil test, temperature (°C), humidity (%), pH, and rainfall (mm). Enter manually or connect IoT sensors.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">How accurate is AgriMind's recommendation? <span class="faq-arrow">⌄</span></div><div class="faq-a">The current version uses rule-based recommendations. Once the ML model is trained and connected, this section can show the tested model accuracy from your own dataset.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">What inputs does the system need? <span class="faq-arrow">⌄</span></div><div class="faq-a">You need N, P, K values from a soil test, temperature (°C), humidity (%), pH, and rainfall (mm). Enter these values manually from your soil and weather data.</div></div>
       <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">When does profit data appear? <span class="faq-arrow">⌄</span></div><div class="faq-a">Profit analytics only appear after you mark a crop as grown and enter your actual revenue — keeping your data accurate.</div></div>
       <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">Is my data saved? <span class="faq-arrow">⌄</span></div><div class="faq-a">Yes — your recommendations, crop history, and profile are saved locally in your browser and persist across sessions until you log out.</div></div>
     </div>
@@ -202,7 +202,7 @@
         <div class="sidebar-label">Main</div>
         <button class="sidebar-item active" id="sb-overview" onclick="showDashSection('overview',this)"><span class="icon">📊</span> Overview</button>
         <button class="sidebar-item" id="sb-rec" onclick="showDashSection('rec',this)"><span class="icon">🌾</span> Crop Recommendation</button>
-        <button class="sidebar-item" id="sb-map" onclick="showDashSection('map',this)"><span class="icon">🗺</span> Farm Location</button>
+        <button class="sidebar-item" id="sb-map" onclick="showDashSection('map',this)"><span class="icon">🗺</span> Live Location</button>
         <button class="sidebar-item" id="sb-report" onclick="showDashSection('report',this)"><span class="icon">📄</span> PDF Report</button>
       </div>
       <div class="sidebar-section">
@@ -253,10 +253,6 @@
         <div class="card">
           <div class="card-title">🌾 Crop Recommendation Form</div>
           <div class="card-sub">Enter soil and environment parameters</div>
-          <div class="toggle-row">
-            <div><div style="font-size:12px;font-weight:700;color:var(--green)">📡 Live IoT Sensor Data</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Auto-fill from connected sensors</div></div>
-            <label class="toggle-switch"><input type="checkbox" onchange="toggleIoT(this.checked)"/><div class="slider-track"></div></label>
-          </div>
           <div class="rec-form">
             <div class="input-row"><div class="input-label">🟫 Nitrogen <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-n" type="number" placeholder="0–140"/></div>
             <div class="input-row"><div class="input-label">🟤 Phosphorus <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-p" type="number" placeholder="0–145"/></div>
@@ -278,14 +274,21 @@
       <!-- MAP -->
       <div id="ds-map" style="display:none">
         <div class="card">
-          <div class="card-title">🗺 Farm Location</div>
-          <div class="card-sub">Registered farm location and weather data</div>
-          <div class="map-container"><div class="map-grid"></div><div style="text-align:center;z-index:1"><div style="font-size:40px;animation:float 3s ease-in-out infinite">📍</div><div style="background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-radius:9px;padding:8px 16px;margin-top:8px;font-size:12px;font-weight:600;color:#1A2E1A">Siliguri, West Bengal, India<br><span style="font-size:10px;color:#7A9E77;font-weight:400">26.7271° N, 88.3953° E</span></div></div></div>
-          <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
-            <div class="weather-chip">🌡 26°C <span style="color:var(--text3);font-size:10px;margin-left:3px">Temp</span></div>
-            <div class="weather-chip">💧 82% <span style="color:var(--text3);font-size:10px;margin-left:3px">Humidity</span></div>
-            <div class="weather-chip">🌧 202mm <span style="color:var(--text3);font-size:10px;margin-left:3px">Rainfall</span></div>
-            <div class="weather-chip">☁️ Partly Cloudy</div>
+          <div class="card-title">🗺 Live Location</div>
+          <div class="card-sub">Fetch your current city and state using browser location permission and OpenStreetMap.</div>
+          <div class="map-container">
+            <div class="map-grid"></div>
+            <div style="text-align:center;z-index:1;max-width:300px;padding:0 14px">
+              <div style="font-size:40px;animation:float 3s ease-in-out infinite">📍</div>
+              <div style="background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-radius:9px;padding:10px 16px;margin-top:8px;font-size:12px;font-weight:600;color:#1A2E1A">
+                <div id="location-name">Location not fetched yet</div>
+                <span id="location-coords" style="font-size:10px;color:#7A9E77;font-weight:400">Allow browser permission to fetch your coordinates.</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px;align-items:center">
+            <button class="btn-primary" style="font-size:12px;padding:10px 18px" onclick="fetchLiveLocation()">📍 Use Current Location</button>
+            <span id="location-status" style="font-size:11px;color:var(--text3)">No live location loaded.</span>
           </div>
         </div>
       </div>
@@ -447,7 +450,7 @@
     <div class="modal-title">💰 Update Revenue</div>
     <div class="modal-sub">Enter actual revenue to unlock profit analytics for <strong id="mrev-crop"></strong>.</div>
     <div class="form-group"><label class="form-label">Actual Revenue (₹)</label><input class="form-input" id="mr-revenue" type="number" placeholder="e.g. 125000"/></div>
-    <div class="form-group"><label class="form-label">Selling Price per Quintal (₹) <span style="font-size:10px;color:var(--text3)">optional</span></label><input class="form-input" id="mr-price" type="number" placeholder="e.g. 2500"/></div>
+    <div class="form-group"><label class="form-label">Selling Price per Quintal (₹) <span style="font-size:10px;color:var(--text3)">*optional*</span></label><input class="form-input" id="mr-price" type="number" placeholder="e.g. 2500"/></div>
     <div class="modal-actions"><button class="btn-ghost" onclick="closeModal('modal-revenue')">Cancel</button><button class="btn-primary" style="font-size:12px;padding:9px 18px" onclick="saveRevenue()">Update →</button></div>
   </div>
 </div>
@@ -516,6 +519,7 @@
 <!-- TOAST -->
 <div id="toast" style="display:none" class="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

@@ -175,6 +175,7 @@ function showDashSection(s,el){
   var t=document.getElementById('ds-'+s);if(t)t.style.display='block';
   document.querySelectorAll('.sidebar-item').forEach(function(x){x.classList.remove('active');});
   if(el)el.classList.add('active');
+  if(s==='map')renderLocationSection();
   if(s==='report')renderReportSection();
 }
 
@@ -188,10 +189,7 @@ function showPage(p){
   if(p==='dashboard')updateDashboard();
 }
 
-//  IOT 
-function toggleIoT(on){
-  if(on){document.getElementById('f-n').value=87;document.getElementById('f-p').value=38;document.getElementById('f-k').value=45;document.getElementById('f-temp').value=24;document.getElementById('f-hum').value=79;document.getElementById('f-ph').value=6.2;document.getElementById('f-rain').value=215;document.getElementById('f-soil').value='Alluvial Soil';document.getElementById('f-area').value=5;}
-}
+//  FORM HELPERS
 function clearRecForm(){document.querySelectorAll('#ds-rec .styled-input, #ds-rec .styled-select').forEach(function(i){i.value='';});}
 
 //  CROPS DATA 
@@ -324,6 +322,73 @@ function renderReportSection(){
   if(S.data.result) document.getElementById('pdf-date').textContent='Generated: '+new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'});
 }
 
+
+//  LIVE LOCATION
+function renderLocationSection(){
+  var nameEl=document.getElementById('location-name');
+  var coordsEl=document.getElementById('location-coords');
+  var statusEl=document.getElementById('location-status');
+  if(!nameEl||!coordsEl||!statusEl)return;
+  nameEl.textContent=S.user&&S.user.location?S.user.location:'Location not fetched yet';
+  coordsEl.textContent='Use current location to fetch city and state.';
+  statusEl.textContent='Ready to request browser location permission.';
+}
+function setLocationStatus(msg,isError){
+  var el=document.getElementById('location-status');
+  if(!el)return;
+  el.textContent=msg;
+  el.style.color=isError?'#C0392B':'var(--text3)';
+}
+function saveLiveLocationToProfile(place){
+  if(!S.user||!place)return;
+  S.user.location=place;
+  var users=getUsers();
+  var idx=users.findIndex(function(u){return u.email===S.user.email;});
+  if(idx>-1){users[idx]=S.user;saveUsers(users);}
+  saveSession(S.user);
+}
+function formatOsmPlace(data){
+  var a=data.address||{};
+  var city=a.city||a.town||a.village||a.municipality||a.county||a.state_district||a.suburb||'';
+  var state=a.state||a.region||'';
+  var country=a.country||'';
+  var parts=[city,state,country].filter(Boolean);
+  return parts.length?parts.join(', '):(data.display_name||'Location found');
+}
+function fetchLiveLocation(){
+  if(!navigator.geolocation){setLocationStatus('Geolocation is not supported in this browser.',true);return;}
+  setLocationStatus('Requesting location permission...',false);
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat=pos.coords.latitude;
+    var lon=pos.coords.longitude;
+    var coords=lat.toFixed(5)+'° N, '+lon.toFixed(5)+'° E';
+    document.getElementById('location-name').textContent='Finding city and state...';
+    document.getElementById('location-coords').textContent=coords;
+    setLocationStatus('Calling OpenStreetMap for city/state...',false);
+    var url='https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&accept-language=en&lat='+encodeURIComponent(lat)+'&lon='+encodeURIComponent(lon);
+    fetch(url,{headers:{'Accept':'application/json'}})
+      .then(function(res){if(!res.ok)throw new Error('Location lookup failed');return res.json();})
+      .then(function(data){
+        var place=formatOsmPlace(data);
+        document.getElementById('location-name').textContent=place;
+        document.getElementById('location-coords').textContent=coords;
+        saveLiveLocationToProfile(place);
+        setLocationStatus('Live location updated from OpenStreetMap.',false);
+        updateDashboard();
+      })
+      .catch(function(err){
+        console.error(err);
+        document.getElementById('location-name').textContent='Coordinates found';
+        setLocationStatus('Coordinates loaded, but city/state lookup failed.',true);
+      });
+  },function(err){
+    var msg='Location permission was denied or unavailable.';
+    if(err.code===err.POSITION_UNAVAILABLE)msg='Your device could not provide a location.';
+    if(err.code===err.TIMEOUT)msg='Location request timed out. Try again.';
+    setLocationStatus(msg,true);
+  },{enableHighAccuracy:true,timeout:12000,maximumAge:300000});
+}
+
 //  PROFILE 
 function openProfile(){
   if(!S.user)return;
@@ -412,7 +477,62 @@ function clearFieldError(id){var el=document.getElementById(id);if(el){el.classL
 function setInputError(id){var el=document.getElementById(id);if(el){el.classList.add('error');el.addEventListener('input',function(){el.classList.remove('error');},{once:true});}}
 function closeModal(id){document.getElementById(id).style.display='none';}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(showToast._t);showToast._t=setTimeout(function(){t.style.display='none';},3000);}
-function downloadPDF(){showToast('📥 Preparing report...');setTimeout(function(){showToast('✅ PDF downloaded! Check your Downloads folder.');},1400);}
+function escapeHtml(value){
+  return String(value===undefined||value===null?'':value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch];});
+}
+function downloadPDF(){
+  if(!S.data.result){showToast('⚠️ Submit the recommendation form first.');return;}
+  if(typeof html2pdf==='undefined'){showToast('⚠️ PDF library is still loading. Try again.');return;}
+  var r=S.data.result;
+  var crop=r.crop;
+  var user=S.user||{};
+  var report=document.createElement('div');
+  report.style.width='760px';
+  report.style.padding='34px';
+  report.style.background='#ffffff';
+  report.style.color='#1A2E1A';
+  report.style.fontFamily='Plus Jakarta Sans, Arial, sans-serif';
+  report.style.lineHeight='1.5';
+  report.innerHTML=''
+    +'<div style="border-bottom:3px solid #52B788;padding-bottom:14px;margin-bottom:20px">'
+    +'<div style="font-size:24px;font-weight:800;color:#2D6A4F">AgriMind Crop Recommendation Report</div>'
+    +'<div style="font-size:12px;color:#4A6741;margin-top:4px">Generated on '+escapeHtml(new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}))+'</div>'
+    +'</div>'
+    +'<div style="margin-bottom:18px"><div style="font-size:13px;color:#7A9E77;font-weight:700;text-transform:uppercase">Recommended Crop</div>'
+    +'<div style="font-size:32px;font-weight:800;margin-top:4px">'+escapeHtml(crop.name)+'</div>'
+    +'<div style="font-size:13px;color:#4A6741">Confidence: '+escapeHtml(crop.confidence)+'% · '+escapeHtml(crop.seasonType)+' · '+escapeHtml(crop.duration)+'</div></div>'
+    +'<table style="width:100%;border-collapse:collapse;margin:18px 0;font-size:12px">'
+    +'<tr><th style="text-align:left;background:#D8F3DC;padding:9px;border:1px solid #B7E4C7">Parameter</th><th style="text-align:left;background:#D8F3DC;padding:9px;border:1px solid #B7E4C7">Value</th></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Nitrogen</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.n)+' kg/ha</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Phosphorus</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.p)+' kg/ha</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Potassium</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.k)+' kg/ha</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Temperature</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.temp)+' °C</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Humidity</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.hum)+'%</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">pH</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.ph)+'</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Rainfall</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.rain)+' mm</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Soil Type</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.soil)+'</td></tr>'
+    +'<tr><td style="padding:8px;border:1px solid #E8E4D0">Field Area</td><td style="padding:8px;border:1px solid #E8E4D0">'+escapeHtml(r.area)+' acres</td></tr>'
+    +'</table>'
+    +'<div style="margin-top:18px"><div style="font-size:15px;font-weight:800;color:#2D6A4F;margin-bottom:8px">Farming Tips</div>'
+    +'<ul style="padding-left:18px;margin:0">'+crop.tips.map(function(t){return '<li style="margin-bottom:6px">'+escapeHtml(t)+'</li>';}).join('')+'</ul></div>'
+    +'<div style="margin-top:22px;font-size:11px;color:#7A9E77">Farmer: '+escapeHtml(user.name||'Not signed in')+' · Location: '+escapeHtml(user.location||'Not set')+'</div>';
+  document.body.appendChild(report);
+  showToast('📥 Preparing PDF...');
+  html2pdf().set({
+    margin:0.45,
+    filename:'AgriMind_Crop_Report.pdf',
+    image:{type:'jpeg',quality:0.98},
+    html2canvas:{scale:2,useCORS:true},
+    jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
+  }).from(report).save().then(function(){
+    report.remove();
+    showToast('✅ PDF downloaded.');
+  }).catch(function(err){
+    console.error(err);
+    report.remove();
+    showToast('⚠️ PDF generation failed. Try again.');
+  });
+}
 
 // Password strength
 function checkStrength(){
