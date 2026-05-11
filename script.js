@@ -1,9 +1,9 @@
-// ══════════ AVATAR COLORS ══════════
+//  AVATAR COLORS 
 var AVATAR_COLORS=['#2D6A4F','#1565C0','#6A1B9A','#C62828','#E65100','#00695C','#4527A0','#AD1457'];
 function getColor(seed){var h=0;for(var i=0;i<seed.length;i++)h=seed.charCodeAt(i)+((h<<5)-h);return AVATAR_COLORS[Math.abs(h)%AVATAR_COLORS.length];}
 function getInitials(name){var p=name.trim().split(' ');return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():name.substring(0,2).toUpperCase();}
 
-// ══════════ STORAGE HELPERS ══════════
+//  STORAGE HELPERS
 function getUsers(){try{return JSON.parse(localStorage.getItem('agrimind_users')||'[]');}catch(e){return [];}}
 function saveUsers(u){localStorage.setItem('agrimind_users',JSON.stringify(u));}
 function getSession(){try{return JSON.parse(localStorage.getItem('agrimind_session')||'null');}catch(e){return null;}}
@@ -12,7 +12,7 @@ function clearSession(){localStorage.removeItem('agrimind_session');}
 function getUserData(email){try{return JSON.parse(localStorage.getItem('agrimind_data_'+email)||'{}');}catch(e){return {};}}
 function saveUserData(email,data){localStorage.setItem('agrimind_data_'+email,JSON.stringify(data));}
 
-// ══════════ APP STATE ══════════
+//  APP STATE
 var S={user:null,data:{result:null,soilData:null,history:[]}};
 
 function loadUserData(){
@@ -25,7 +25,7 @@ function persistData(){
   saveUserData(S.user.email,{result:S.data.result,soilData:S.data.soilData,history:S.data.history});
 }
 
-// ══════════ THEME ══════════
+//  THEME
 var isDark=false;
 function toggleTheme(){
   isDark=!isDark;
@@ -38,7 +38,7 @@ function toggleTheme(){
   if(t==='dark'){isDark=true;document.documentElement.setAttribute('data-theme','dark');document.getElementById('theme-btn').textContent='☀️';}
 })();
 
-// ══════════ AUTH ══════════
+//  AUTH 
 function requireAuth(page){
   if(!S.user){showPage('login');showToast('Please sign in to continue.');return;}
   showPage(page);
@@ -111,7 +111,7 @@ function doLogout(){
 
 function confirmLogout(){document.getElementById('modal-logout').style.display='flex';}
 
-// ══════════ NAV STATE ══════════
+//  NAV STATE 
 function updateNavForUser(){
   document.getElementById('nav-guest').style.display='none';
   document.getElementById('nav-user').style.display='block';
@@ -132,13 +132,13 @@ function updateNavForGuest(){
   document.getElementById('mob-logout').style.display='none';
 }
 
-// ══════════ DROPDOWN ══════════
+//  DROPDOWN 
 var ddOpen=false;
 function toggleDropdown(){ddOpen=!ddOpen;document.getElementById('avatar-dropdown').style.display=ddOpen?'block':'none';}
 function closeDropdown(){ddOpen=false;document.getElementById('avatar-dropdown').style.display='none';}
 document.addEventListener('click',function(e){if(!e.target.closest('.avatar-wrap'))closeDropdown();});
 
-// ══════════ DASHBOARD ══════════
+//  DASHBOARD 
 function getGreeting(){
   var h=new Date().getHours();
   if(h<12)return'Good morning';
@@ -169,7 +169,7 @@ function updateMetrics(){
 }
 function calcSoilScore(s){return Math.round(((s.n/140)+(s.p/145)+(s.k/205))/3*100);}
 
-// ══════════ DASH SECTIONS ══════════
+//  DASH SECTIONS 
 function showDashSection(s,el){
   ['ds-overview','ds-rec','ds-map','ds-report'].forEach(function(id){var d=document.getElementById(id);if(d)d.style.display='none';});
   var t=document.getElementById('ds-'+s);if(t)t.style.display='block';
@@ -178,7 +178,7 @@ function showDashSection(s,el){
   if(s==='report')renderReportSection();
 }
 
-// ══════════ PAGE ROUTING ══════════
+//  PAGE ROUTING 
 function showPage(p){
   document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});
   var el=document.getElementById('page-'+p);
@@ -188,13 +188,13 @@ function showPage(p){
   if(p==='dashboard')updateDashboard();
 }
 
-// ══════════ IOT ══════════
+//  IOT 
 function toggleIoT(on){
   if(on){document.getElementById('f-n').value=87;document.getElementById('f-p').value=38;document.getElementById('f-k').value=45;document.getElementById('f-temp').value=24;document.getElementById('f-hum').value=79;document.getElementById('f-ph').value=6.2;document.getElementById('f-rain').value=215;document.getElementById('f-soil').value='Alluvial Soil';document.getElementById('f-area').value=5;}
 }
 function clearRecForm(){document.querySelectorAll('#ds-rec .styled-input, #ds-rec .styled-select').forEach(function(i){i.value='';});}
 
-// ══════════ CROPS DATA ══════════
+//  CROPS DATA 
 var CROPS=[
   {name:'Rice (Paddy)',emoji:'🌾',season:'June–October',seasonType:'Kharif Season',duration:'90–120 days',confidence:94,tips:['Maintain 5–10 cm standing water during tillering','Apply Urea in 3 splits: basal, tillering, panicle initiation','Monitor for stem borer and brown planthopper weekly','Transplant 25-day seedlings at 20×15 cm spacing','Harvest at 85–90% grain maturity']},
   {name:'Wheat',emoji:'🌿',season:'November–March',seasonType:'Rabi Season',duration:'100–130 days',confidence:89,tips:['Sow at 20–22°C for best germination','Apply phosphorus at sowing time','Irrigate at crown root initiation stage','Apply fungicide for rust control if needed','Harvest when grain moisture is below 14%']},
@@ -210,7 +210,7 @@ function pickCrop(n,p,k,temp,hum,ph){
   return CROPS[Math.floor(Math.random()*CROPS.length)];
 }
 
-// ══════════ RECOMMENDATION ══════════
+//  RECOMMENDATION 
 function getRecommendation(){
   var fields=['f-n','f-p','f-k','f-temp','f-hum','f-ph','f-rain','f-area'];
   var missing=fields.some(function(id){return !document.getElementById(id).value;});
@@ -250,7 +250,7 @@ function renderResultPage(crop){
   document.getElementById('mark-grown-banner').style.display=alreadyGrown?'none':'flex';
 }
 
-// ══════════ HISTORY ══════════
+//  HISTORY 
 var editRevIdx=null;
 function openGrownModal(){
   if(!S.data.result)return;
@@ -299,7 +299,7 @@ function renderHistory(){
   else analytics.style.display='none';
 }
 
-// ══════════ SOIL ══════════
+//  SOIL 
 function renderSoil(){
   var empty=document.getElementById('soil-empty'),data=document.getElementById('soil-data');
   if(!S.data.soilData){empty.style.display='block';data.style.display='none';return;}
@@ -317,14 +317,14 @@ function renderSoil(){
   document.getElementById('ph-label-text').innerHTML='pH: <strong>'+s.ph+'</strong> '+(s.ph>=6&&s.ph<=7.5?'✅ Good for most crops':'⚠️ Check crop-specific pH range');
 }
 
-// ══════════ REPORT ══════════
+//  REPORT 
 function renderReportSection(){
   document.getElementById('pdf-no-data').style.display=S.data.result?'none':'block';
   document.getElementById('pdf-ready').style.display=S.data.result?'block':'none';
   if(S.data.result) document.getElementById('pdf-date').textContent='Generated: '+new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'});
 }
 
-// ══════════ PROFILE ══════════
+//  PROFILE 
 function openProfile(){
   if(!S.user)return;
   document.getElementById('profile-view').style.display='block';
@@ -370,7 +370,7 @@ function saveProfile(){
 }
 function openSettings(){document.getElementById('modal-settings').style.display='flex';}
 
-// ══════════ CHARTS ══════════
+//  CHARTS 
 function drawBarChart(id,labels,datasets,colors){
   var el=document.getElementById(id);if(!el)return;el.innerHTML='';
   var W=el.offsetWidth||360,H=el.offsetHeight||190;
@@ -405,7 +405,7 @@ function renderHistoryCharts(){
   drawLineChart('chart-profit',labels,completed.map(function(e){return e.revenue-e.investment;}),'#2D6A4F');
 }
 
-// ══════════ HELPERS ══════════
+//  HELPERS 
 function togglePwd(id,btn){var i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
 function setFieldError(id,msg){var el=document.getElementById(id);el.textContent=msg;el.classList.add('show');}
 function clearFieldError(id){var el=document.getElementById(id);if(el){el.classList.remove('show');}}
@@ -436,7 +436,7 @@ function checkStrength(){
 function openMobileSidebar(){document.getElementById('mobile-overlay').style.display='block';document.getElementById('mobile-sidebar').style.display='block';}
 function closeMobileSidebar(){document.getElementById('mobile-overlay').style.display='none';document.getElementById('mobile-sidebar').style.display='none';}
 
-// ══════════ INIT ══════════
+//  INIT 
 (function(){
   var session=getSession();
   if(session){
