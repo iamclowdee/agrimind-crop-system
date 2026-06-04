@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load trained model once when server starts
-model = joblib.load("model/crop_model.pkl")
+model = joblib.load("model/crop_model_v2.pkl")
 
 
 @app.route("/")

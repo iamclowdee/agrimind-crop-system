@@ -242,6 +242,8 @@ function getRecommendation(){
 
 .then(data => {
 
+    console.log(data);
+
     const info = cropInfo[data.recommended_crop] || {
     emoji: "🌱",
     season: "Unknown",
