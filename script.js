@@ -240,7 +240,20 @@ function getRecommendation(){
 .then(response => response.json())
 .then(data => {
 
-  var crop = data.recommended_crop;
+  var crop = {
+  name: data.recommended_crop,
+  emoji: "🌾",
+  confidence: 85,
+  season: "Recommended Season",
+  seasonType: "Suitable",
+  duration: "90-120 Days",
+  tips: [
+    "Maintain proper irrigation.",
+    "Monitor soil moisture regularly.",
+    "Apply fertilizer as required.",
+    "Inspect crops for pests and diseases."
+  ]
+};
 
   S.data.result = {
     crop: crop,
