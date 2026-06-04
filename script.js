@@ -221,16 +221,66 @@ function getRecommendation(){
   var temp=+document.getElementById('f-temp').value,hum=+document.getElementById('f-hum').value,ph=+document.getElementById('f-ph').value;
   var rain=+document.getElementById('f-rain').value,area=+document.getElementById('f-area').value;
   var soil=document.getElementById('f-soil').value;
-  setTimeout(function(){
-    var crop=pickCrop(n,p,k,temp,hum,ph);
-    S.data.result={crop:crop,n:n,p:p,k:k,temp:temp,hum:hum,ph:ph,rain:rain,area:area,soil:soil};
-    S.data.soilData={n:n,p:p,k:k,ph:ph,hum:hum};
-    persistData();
-    btn.innerHTML='🌾 Get Recommendation';btn.disabled=false;
-    renderResultPage(crop);
-    updateMetrics();
-    showPage('result');
-  },1500);
+  
+  fetch("http://127.0.0.1:5000/predict", { //API call starts here for reference
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    nitrogen: n,
+    phosphorus: p,
+    potassium: k,
+    temperature: temp,
+    humidity: hum,
+    ph: ph,
+    rainfall: rain
+  })
+})
+.then(response => response.json())
+.then(data => {
+
+  var crop = data.recommended_crop;
+
+  S.data.result = {
+    crop: crop,
+    n: n,
+    p: p,
+    k: k,
+    temp: temp,
+    hum: hum,
+    ph: ph,
+    rain: rain,
+    area: area,
+    soil: soil
+  };
+
+  S.data.soilData = {
+    n: n,
+    p: p,
+    k: k,
+    ph: ph,
+    hum: hum
+  };
+
+  persistData();
+
+  btn.innerHTML = '🌾 Get Recommendation';
+  btn.disabled = false;
+
+  renderResultPage(crop);
+  updateMetrics();
+  showPage('result');
+})
+.catch(error => {
+
+  console.error(error);
+
+  alert("Prediction failed. Is Flask running?");
+
+  btn.innerHTML = '🌾 Get Recommendation';
+  btn.disabled = false;
+});
 }
 function renderResultPage(crop){
   document.getElementById('result-emoji').textContent=crop.emoji;
