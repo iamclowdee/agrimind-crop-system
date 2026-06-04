@@ -237,23 +237,30 @@ function getRecommendation(){
     rainfall: rain
   })
 })
+
 .then(response => response.json())
+
 .then(data => {
 
+    const info = cropInfo[data.recommended_crop] || {
+    emoji: "🌱",
+    season: "Unknown",
+    seasonType: "General Crop",
+    duration: "Unknown",
+    tips: [
+      "Follow recommended farming practices."
+    ]
+  };
+
   var crop = {
-  name: data.recommended_crop,
-  emoji: "🌾",
-  confidence: 85,
-  season: "Recommended Season",
-  seasonType: "Suitable",
-  duration: "90-120 Days",
-  tips: [
-    "Maintain proper irrigation.",
-    "Monitor soil moisture regularly.",
-    "Apply fertilizer as required.",
-    "Inspect crops for pests and diseases."
-  ]
-};
+    name: data.recommended_crop,
+    emoji: info.emoji,
+    confidence: data.confidence,
+    season: info.season,
+    seasonType: info.seasonType,
+    duration: info.duration,
+    tips: info.tips
+  };
 
   S.data.result = {
     crop: crop,
@@ -635,3 +642,60 @@ function closeMobileSidebar(){document.getElementById('mobile-overlay').style.di
     var soil=document.getElementById('f-soil');if(soil)soil.value=r.soil||'';
   }
 })();
+
+  //Crop Metadata
+  const cropInfo = {
+
+  Rice: {
+    emoji: "🌾",
+    season: "Kharif",
+    seasonType: "Monsoon Crop",
+    duration: "120-150 Days",
+    tips: [
+      "Maintain standing water during early growth.",
+      "Monitor pest attacks regularly.",
+      "Use balanced nitrogen fertilizer.",
+      "Ensure proper drainage before harvest."
+    ]
+  },
+
+  Wheat: {
+    emoji: "🌾",
+    season: "Rabi",
+    seasonType: "Winter Crop",
+    duration: "120-140 Days",
+    tips: [
+      "Irrigate during tillering stage.",
+      "Avoid waterlogging.",
+      "Monitor rust disease.",
+      "Apply fertilizer in split doses."
+    ]
+  },
+
+  Cotton: {
+    emoji: "🧵",
+    season: "Kharif",
+    seasonType: "Cash Crop",
+    duration: "150-180 Days",
+    tips: [
+      "Monitor bollworm infestation.",
+      "Maintain proper spacing.",
+      "Avoid excessive irrigation.",
+      "Use balanced NPK fertilization."
+    ]
+  },
+
+  Maize: {
+    emoji: "🌽",
+    season: "Kharif",
+    seasonType: "Cereal Crop",
+    duration: "90-120 Days",
+    tips: [
+      "Ensure adequate nitrogen supply.",
+      "Maintain weed-free fields.",
+      "Irrigate during tasseling.",
+      "Monitor stem borer attacks."
+    ]
+  }
+
+};

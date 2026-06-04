@@ -33,9 +33,14 @@ def predict():
 
         prediction = model.predict(features)[0]
 
+        probabilities = model.predict_proba(features)[0]
+
+        confidence = round(max(probabilities) * 100, 2)
+
         return jsonify({
-            "success": True,
-            "recommended_crop": prediction
+        "success": True,
+        "recommended_crop": prediction,
+        "confidence": confidence
         })
 
     except Exception as e:
