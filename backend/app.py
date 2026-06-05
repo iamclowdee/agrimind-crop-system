@@ -1,3 +1,5 @@
+from datetime import datetime
+from mongo_db import predictions_collection
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -13,6 +15,16 @@ model = joblib.load("model/crop_model_v2.pkl")
 @app.route("/")
 def home():
     return "AgriMind API Running"
+
+@app.route("/test-db")
+def test_db():
+
+    count = predictions_collection.count_documents({})
+
+    return jsonify({
+        "status": "connected",
+        "prediction_count": count
+    })
 
 
 @app.route("/predict", methods=["POST"])
@@ -36,6 +48,21 @@ def predict():
         probabilities = model.predict_proba(features)[0]
 
         confidence = round(max(probabilities) * 100, 2)
+
+        prediction_record = {
+        "nitrogen": float(data["nitrogen"]),
+        "phosphorus": float(data["phosphorus"]),
+        "potassium": float(data["potassium"]),
+        "temperature": float(data["temperature"]),
+        "humidity": float(data["humidity"]),
+        "ph": float(data["ph"]),
+        "rainfall": float(data["rainfall"]),
+        "recommended_crop": prediction,
+        "confidence": confidence,
+        "created_at": datetime.utcnow()
+        }
+
+        predictions_collection.insert_one(prediction_record)
 
         return jsonify({
         "success": True,
