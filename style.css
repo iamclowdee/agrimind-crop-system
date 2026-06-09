@@ -320,18 +320,14 @@ footer{background:var(--green);color:rgba(255,255,255,.75);text-align:center;pad
 }
 
 /* Search Location Styling */
-#location-suggestions{
-  margin-top:6px;
-  border-radius:8px;
-  overflow:hidden;
-}
 
 #location-suggestions{
   margin-top:6px;
   border-radius:10px;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid var(--input-border);
   background:var(--card);
+  box-shadow:var(--shadow);
 }
 
 .location-item{
@@ -339,13 +335,36 @@ footer{background:var(--green);color:rgba(255,255,255,.75);text-align:center;pad
   cursor:pointer;
   background:var(--card);
   color:var(--text);
-  border-bottom:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid var(--border);
+  transition:all .2s;
+}
+
+.location-item:last-child{
+  border-bottom:none;
 }
 
 .location-item:hover{
-  background:rgba(82,183,136,.15);
+  background:var(--green4);
+  color:var(--green);
 }
 
-.location-item:hover{
-  background:#f3f3f3;
+.autofilled{
+  background-color:#dcdcdc !important;
+  color:#555 !important;
+  cursor:not-allowed;
+  font-weight:600;
+}
+
+[data-theme="dark"] .autofilled{
+  background-color:#2f2f2f !important;
+  color:#bdbdbd !important;
+  border-color:#444 !important;
+}
+[data-theme="dark"] .styled-select{
+  color:var(--text);
+}
+
+[data-theme="dark"] .styled-select option{
+  background:#222;
+  color:#e8f5e9;
 }

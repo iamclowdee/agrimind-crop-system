@@ -795,22 +795,41 @@ item.textContent = name;
 
         suggestionBox.innerHTML = "";
 
-        const detailsResponse = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${place.lat}&lon=${place.lon}`
-        );
+        try {
 
-        const details = await detailsResponse.json();
+          const detailsResponse = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${place.lat}&lon=${place.lon}`
+          );
 
-        const addr = details.address || {};
+          const details = await detailsResponse.json();
 
-        document.getElementById("f-district").value =
-          addr.state_district ||
-          addr.county ||
-          "";
+          const addr = details.address || {};
+          
+          console.log(details);
+          console.log(addr);
 
-        document.getElementById("f-region").value =
-          addr.state ||
-          "";
+          document.getElementById("f-region").readOnly = false;
+          document.getElementById("f-district").readOnly = false;
+
+          document.getElementById("f-region").value =
+            addr.state || "";
+          document.getElementById("f-district").value =
+            addr.state_district ||
+            addr.county ||
+            "";
+
+          document.getElementById("f-region").readOnly = true;
+          document.getElementById("f-district").readOnly = true;
+
+          document.getElementById("f-region").classList.add("autofilled");
+          document.getElementById("f-district").classList.add("autofilled");
+
+        }
+        catch(error){
+
+          console.error("Location details error:", error);
+
+        }
 
         fetchWeather(
           place.lat,
@@ -828,7 +847,6 @@ item.textContent = name;
 async function fetchWeather(lat, lon){
 
   try{
-
     const response = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation`
     );
@@ -837,20 +855,14 @@ async function fetchWeather(lat, lon){
 
     document.getElementById("f-temp").value =
       Math.round(data.current.temperature_2m);
-
     document.getElementById("f-hum").value =
       Math.round(data.current.relative_humidity_2m);
-
     document.getElementById("f-rain").value =
       Math.round(data.current.precipitation);
-
   }
 
   catch(error){
-
     console.error(error);
-
     alert("Weather fetch failed");
-
   }
 }
