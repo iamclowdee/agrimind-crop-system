@@ -21,4 +21,5 @@ Date: 10 and 11th June, '26
 10. Added Confidence Level
 11. Added extra attributes for recommendation
 12. Added location search dropdown/autofill
-13.  
+13. Dark mode updates
+14. Live Location correction and update
