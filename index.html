@@ -352,6 +352,21 @@
           <div class="card-title">🌾 Crop Recommendation Form</div>
           <div class="card-sub">Enter soil and environment parameters</div>
           <div class="rec-form">
+            
+            <div class="input-row">
+            <div class="input-label">📍 Search Location</div>
+
+            <input
+              class="styled-input"
+              id="location-search"
+              type="text"
+              placeholder="Type a city, district, or state"
+              autocomplete="off"
+            />
+
+          <div id="location-suggestions"></div>
+          </div>
+
             <div class="input-row"><div class="input-label">🟫 Nitrogen <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-n" type="number" placeholder="0–140"/></div>
             <div class="input-row"><div class="input-label">🟤 Phosphorus <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-p" type="number" placeholder="0–145"/></div>
             <div class="input-row"><div class="input-label">🟡 Potassium <span class="unit-tag">kg/ha</span></div><input class="styled-input" id="f-k" type="number" placeholder="0–205"/></div>

@@ -318,3 +318,34 @@ footer{background:var(--green);color:rgba(255,255,255,.75);text-align:center;pad
   .metrics-row{grid-template-columns:1fr 1fr}
   .result-hero{flex-direction:column;text-align:center}
 }
+
+/* Search Location Styling */
+#location-suggestions{
+  margin-top:6px;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+#location-suggestions{
+  margin-top:6px;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);
+  background:var(--card);
+}
+
+.location-item{
+  padding:12px;
+  cursor:pointer;
+  background:var(--card);
+  color:var(--text);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.location-item:hover{
+  background:rgba(82,183,136,.15);
+}
+
+.location-item:hover{
+  background:#f3f3f3;
+}

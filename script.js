@@ -701,3 +701,58 @@ function closeMobileSidebar(){document.getElementById('mobile-overlay').style.di
   }
 
 };
+
+// Search Location Recommendation
+const locationInput =
+  document.getElementById("location-search");
+
+const suggestionBox =
+  document.getElementById("location-suggestions");
+
+if(locationInput){
+
+locationInput.addEventListener(
+  "input",
+  async function(){
+
+    const query = this.value.trim();
+
+    if(query.length < 3){
+      suggestionBox.innerHTML = "";
+      return;
+    }
+
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`
+    );
+
+    const data = await response.json();
+
+    suggestionBox.innerHTML = "";
+
+    data.forEach(place => {
+
+      const item = document.createElement("div");
+
+      const name = place.display_name.split(",").slice(0,2).join(", ");
+
+item.textContent = name;
+
+      item.className =
+        "location-item";
+
+      item.onclick = () => {
+
+        locationInput.value =
+          place.display_name;
+
+        suggestionBox.innerHTML = "";
+
+        console.log(place);
+      };
+
+      suggestionBox.appendChild(item);
+    });
+  }
+);
+}
