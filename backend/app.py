@@ -53,7 +53,13 @@ def predict():
 
         prediction = model.predict(features)[0]
 
+        print("PREDICTION:", prediction)
+
         probabilities = model.predict_proba(features)[0]
+
+        print("TOP 10 PROBABILITIES")
+        for crop, prob in zip(model.classes_, probabilities):
+            print(crop, round(prob * 100, 2))
 
         confidence = round(max(probabilities) * 100, 2)
 

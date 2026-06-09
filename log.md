@@ -1,4 +1,4 @@
-<!-- Date: 4th June '26 -->
+Date: 4th June '26
 1. Converted the crop recommendation from fake logic to a real ML model
 2. Built a Flask backend
 3. Trained:
@@ -17,4 +17,8 @@ crop_model_v2.pkl
 8. Explored dataset quality and class imbalance
 9. Created a SQLite prototype (which we're no longer planning to use)
 
-<!-- Date:  -->
+Date: 10 and 11th June, '26
+10. Added Confidence Level
+11. Added extra attributes for recommendation
+12. Added location search dropdown/autofill
+13.  
