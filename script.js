@@ -210,7 +210,26 @@ function pickCrop(n,p,k,temp,hum,ph){
 
 //  RECOMMENDATION 
 function getRecommendation(){
-  var fields=['f-n','f-p','f-k','f-temp','f-hum','f-ph','f-rain','f-area'];
+  var fields=[
+  'f-n',
+  'f-p',
+  'f-k',
+  'f-temp',
+  'f-hum',
+  'f-ph',
+  'f-rain',
+
+  'f-soil-moisture',
+  'f-organic-carbon',
+  'f-electrical-conductivity',
+
+  'f-season',
+  'f-soil-color',
+  'f-region',
+  'f-district',
+
+  'f-area'
+  ];
   var missing=fields.some(function(id){return !document.getElementById(id).value;});
   var errEl=document.getElementById('form-error');
   if(missing||!document.getElementById('f-soil').value){errEl.style.display='block';return;}
@@ -221,6 +240,20 @@ function getRecommendation(){
   var temp=+document.getElementById('f-temp').value,hum=+document.getElementById('f-hum').value,ph=+document.getElementById('f-ph').value;
   var rain=+document.getElementById('f-rain').value,area=+document.getElementById('f-area').value;
   var soil=document.getElementById('f-soil').value;
+  var soil_moisture =
+  +document.getElementById('f-soil-moisture').value;
+
+  var organic_carbon =  +document.getElementById('f-organic-carbon').value;
+
+  var electrical_conductivity =  +document.getElementById('f-electrical-conductivity').value;
+
+  var season =  document.getElementById('f-season').value;
+
+  var soil_color =  document.getElementById('f-soil-color').value;
+
+  var region =  document.getElementById('f-region').value;
+
+  var district_name = document.getElementById('f-district').value;
   
   fetch("http://127.0.0.1:5000/predict", { //API call starts here for reference
   method: "POST",
@@ -234,7 +267,16 @@ function getRecommendation(){
     temperature: temp,
     humidity: hum,
     ph: ph,
-    rainfall: rain
+    rainfall: rain,
+
+    soil_moisture: soil_moisture,
+    organic_carbon: organic_carbon,
+    electrical_conductivity: electrical_conductivity,
+
+    season: season,
+    soil_color: soil_color,
+    region: region,
+    district_name: district_name
   })
 })
 
@@ -716,6 +758,7 @@ locationInput.addEventListener(
   async function(){
 
     const query = this.value.trim();
+    console.log("typing", query);
 
     if(query.length < 3){
       suggestionBox.innerHTML = "";
@@ -723,7 +766,12 @@ locationInput.addEventListener(
     }
 
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`
+      `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`,
+      {
+        headers: {
+          "Accept": "application/json"
+        }
+      }
     );
 
     const data = await response.json();
@@ -743,16 +791,46 @@ item.textContent = name;
 
       item.onclick = () => {
 
-        locationInput.value =
-          place.display_name;
+        locationInput.value = place.display_name;
 
         suggestionBox.innerHTML = "";
 
-        console.log(place);
+        fetchWeather(
+          place.lat,
+          place.lon
+        );
       };
 
       suggestionBox.appendChild(item);
     });
   }
 );
+}
+
+// Weather Function
+async function fetchWeather(lat, lon){
+
+  try{
+
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`
+    );
+
+    const data = await response.json();
+
+    document.getElementById("f-temp").value =
+      Math.round(data.current.temperature_2m);
+
+    document.getElementById("f-hum").value =
+      Math.round(data.current.relative_humidity_2m);
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    alert("Weather fetch failed");
+
+  }
 }

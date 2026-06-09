@@ -10,6 +10,7 @@ CORS(app)
 
 # Load trained model once when server starts
 model = joblib.load("model/crop_model_v2.pkl")
+print(model.feature_names_in_)
 
 
 @app.route("/")
@@ -40,7 +41,14 @@ def predict():
             "temperature": float(data["temperature"]),
             "humidity": float(data["humidity"]),
             "ph": float(data["ph"]),
-            "rainfall": float(data["rainfall"])
+            "rainfall": float(data["rainfall"]),
+            "soil_moisture": float(data["soil_moisture"]),
+            "organic_carbon": float(data["organic_carbon"]),
+            "electrical_conductivity": float(data["electrical_conductivity"]),
+            "season": data["season"],
+            "soil_color": data["soil_color"],
+            "region": data["region"],
+            "district_name": data["district_name"]
         }])
 
         prediction = model.predict(features)[0]
@@ -62,7 +70,7 @@ def predict():
         "created_at": datetime.utcnow()
         }
 
-        predictions_collection.insert_one(prediction_record)
+        # predictions_collection.insert_one(prediction_record)
 
         return jsonify({
         "success": True,
