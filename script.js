@@ -660,6 +660,78 @@ function downloadPDF(){
   });
 }
 
+async function shareReport(){
+
+  if(!S.data.result){
+    showToast('⚠️ Submit the recommendation form first.');
+    return;
+  }
+
+  if(typeof html2pdf === 'undefined'){
+    showToast('⚠️ PDF library is still loading.');
+    return;
+  }
+
+  try{
+    showToast('📄 Generating PDF...');
+
+    var r=S.data.result;
+    var crop=r.crop;
+    var user=S.user||{};
+
+    var report=document.createElement('div');
+
+    report.style.width='760px';
+    report.style.padding='34px';
+    report.style.background='#ffffff';
+    report.style.color='#1A2E1A';
+    report.style.fontFamily='Plus Jakarta Sans, Arial, sans-serif';
+
+    report.innerHTML='AgriMind Report'; // temporary
+
+    document.body.appendChild(report);
+
+    const pdfBlob = await html2pdf()
+      .set({
+        margin:0.45,
+        filename:'AgriMind_Crop_Report.pdf',
+        image:{type:'jpeg',quality:0.98},
+        html2canvas:{scale:2,useCORS:true},
+        jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
+      })
+      .from(report)
+      .outputPdf('blob');
+
+    report.remove();
+
+    const file = new File(
+      [pdfBlob],
+      'AgriMind_Crop_Report.pdf',
+      { type:'application/pdf' }
+    );
+
+    if(
+      navigator.canShare &&
+      navigator.canShare({ files:[file] })
+    ){
+        await navigator.share({
+        title:'AgriMind Crop Report',
+        text:'Crop Recommendation Report',
+        files:[file]
+      });
+
+      showToast('✅ Report shared.');
+
+    }else{
+      showToast('⚠️ Sharing not supported on this device.');
+    }
+
+  }catch(err){
+    console.error(err);
+    showToast('⚠️ Failed to share PDF.');
+  }
+}
+
 // Password strength
 function checkStrength(){
   var pwd=document.getElementById('su-pwd').value;
