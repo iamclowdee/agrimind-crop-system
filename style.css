@@ -284,6 +284,29 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 footer{background:var(--green);color:rgba(255,255,255,.75);text-align:center;padding:26px;font-size:13px}
 [data-theme="dark"] footer{background:#152b20}
 
+/* PRICING */
+.pricing-hero{min-height:400px;display:flex;align-items:center;justify-content:center;padding:60px 20px;background:linear-gradient(135deg,var(--green4),rgba(148,213,178,.1));border-bottom:1px solid var(--border)}
+.pricing-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1100px;margin:0 auto;padding:60px 24px}
+.pricing-card{background:var(--card);border:2px solid var(--border2);border-radius:var(--r);padding:32px 24px;transition:all .3s;display:flex;flex-direction:column;position:relative}
+.pricing-card:hover{border-color:var(--green2);box-shadow:var(--shadow2);transform:translateY(-4px)}
+.pricing-card-featured{border-color:var(--green2);background:linear-gradient(135deg,var(--green4),var(--card));box-shadow:0 8px 32px rgba(82,183,136,.18)}
+.pricing-card-featured:hover{box-shadow:0 12px 48px rgba(82,183,136,.28)}
+.pricing-popular{display:inline-flex;align-items:center;gap:4px;background:var(--green);color:#fff;padding:6px 12px;border-radius:50px;font-size:12px;font-weight:700;margin-bottom:12px;width:fit-content}
+.pricing-badge{font-size:22px;font-weight:800;color:var(--green);margin-bottom:12px}
+.pricing-price{margin-bottom:4px}
+.price-amount{font-size:42px;font-weight:800;color:var(--green2)}
+.price-period{color:var(--text3);font-size:13px;margin-left:6px}
+.pricing-desc{color:var(--text2);font-size:13px;margin-bottom:24px;min-height:32px}
+.btn-pricing{padding:12px 20px;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .25s;font-family:inherit;width:100%;margin-bottom:24px}
+.btn-pricing-free{background:var(--green4);color:var(--green);border:2px solid var(--green3)}
+.btn-pricing-free:hover{background:var(--green3);transform:translateY(-2px)}
+.btn-pricing-primary{background:var(--green);color:#fff}
+.btn-pricing-primary:hover{background:#1e5035;transform:translateY(-2px);box-shadow:0 8px 24px rgba(45,106,79,.28)}
+.pricing-features{display:flex;flex-direction:column;gap:12px}
+.pricing-feature{font-size:13px;color:var(--text2);display:flex;align-items:flex-start;gap:8px}
+.pricing-feature.disabled{opacity:.5;color:var(--text3)}
+.pricing-faq{padding:60px 24px;max-width:700px;margin:0 auto;background:var(--bg)}
+
 /* RESPONSIVE */
 @media(max-width:768px){
   .nav-links{display:none}

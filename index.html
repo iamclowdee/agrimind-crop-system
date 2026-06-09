@@ -20,6 +20,7 @@
   </div>
   <div class="nav-links">
     <button class="nav-link" onclick="showPage('landing')">Home</button>
+    <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
     <button class="nav-link" onclick="requireAuth('dashboard')">Dashboard</button>
     <button class="nav-link" onclick="requireAuth('history')">History</button>
     <button class="nav-link" onclick="requireAuth('soil')">Soil Health</button>
@@ -59,6 +60,7 @@
   </div>
   <div style="display:flex;flex-direction:column;gap:2px">
     <button class="sidebar-item" onclick="showPage('landing');closeMobileSidebar()"><span class="icon">🏠</span> Home</button>
+    <button class="sidebar-item" onclick="showPage('pricing');closeMobileSidebar()"><span class="icon">💰</span> Pricing</button>
     <button class="sidebar-item" onclick="requireAuth('dashboard');closeMobileSidebar()"><span class="icon">📊</span> Dashboard</button>
     <button class="sidebar-item" onclick="requireAuth('history');closeMobileSidebar()"><span class="icon">📅</span> Crop History</button>
     <button class="sidebar-item" onclick="requireAuth('soil');closeMobileSidebar()"><span class="icon">🧪</span> Soil Health</button>
@@ -112,6 +114,101 @@
       <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">Is my data saved? <span class="faq-arrow">⌄</span></div><div class="faq-a">Yes — your recommendations, crop history, and profile are saved locally in your browser and persist across sessions until you log out.</div></div>
     </div>
   </div>
+  <footer>
+    <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:5px">🌱 AgriMind</div>
+    <div>MCA 2026 Major · Crop Recommendation System</div>
+    <div style="margin-top:5px;opacity:.5">© 2025 AgriMind.</div>
+  </footer>
+</div>
+
+<!-- ══════════ PRICING ══════════ -->
+<div id="page-pricing" class="page">
+  <div class="pricing-hero">
+    <div style="text-align:center;max-width:700px;margin:0 auto">
+      <div class="hero-badge fade-up">💰 Transparent Pricing</div>
+      <h1 class="hero-title fade-up" style="animation-delay:.1s">Choose Your Plan</h1>
+      <p class="hero-sub fade-up" style="animation-delay:.2s">Start free or upgrade to unlock advanced features. No credit card required for Free plan.</p>
+    </div>
+  </div>
+
+  <div class="pricing-container">
+    <div class="pricing-card">
+      <div class="pricing-badge">Free</div>
+      <div class="pricing-price">
+        <span class="price-amount">₹0</span>
+        <span class="price-period">/month</span>
+      </div>
+      <div class="pricing-desc">Perfect for trying AgriMind</div>
+      
+      <button class="btn-pricing btn-pricing-free" onclick="requireAuth('dashboard')">Get Started</button>
+      
+      <div class="pricing-features">
+        <div class="pricing-feature">✓ 5 crop recommendations/month</div>
+        <div class="pricing-feature">✓ Basic soil health analysis</div>
+        <div class="pricing-feature">✓ Crop history (up to 10 entries)</div>
+        <div class="pricing-feature">✓ Email support</div>
+        <div class="pricing-feature disabled">✕ Advanced analytics</div>
+        <div class="pricing-feature disabled">✕ PDF report export</div>
+        <div class="pricing-feature disabled">✕ Priority support</div>
+      </div>
+    </div>
+
+    <div class="pricing-card pricing-card-featured">
+      <div class="pricing-popular">🌟 Most Popular</div>
+      <div class="pricing-badge">Plus</div>
+      <div class="pricing-price">
+        <span class="price-amount">₹100</span>
+        <span class="price-period">/month</span>
+      </div>
+      <div class="pricing-desc">Ideal for serious farmers</div>
+      
+      <button class="btn-pricing btn-pricing-primary" onclick="requireAuth('dashboard')">Subscribe Now</button>
+      
+      <div class="pricing-features">
+        <div class="pricing-feature">✓ Unlimited recommendations</div>
+        <div class="pricing-feature">✓ Advanced soil analysis</div>
+        <div class="pricing-feature">✓ Unlimited crop history</div>
+        <div class="pricing-feature">✓ Profit & loss tracking</div>
+        <div class="pricing-feature">✓ Advanced analytics</div>
+        <div class="pricing-feature">✓ Email support</div>
+        <div class="pricing-feature disabled">✕ Priority phone support</div>
+      </div>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-badge">Pro</div>
+      <div class="pricing-price">
+        <span class="price-amount">₹300</span>
+        <span class="price-period">/month</span>
+      </div>
+      <div class="pricing-desc">For agricultural professionals</div>
+      
+      <button class="btn-pricing btn-pricing-primary" onclick="requireAuth('dashboard')">Subscribe Now</button>
+      
+      <div class="pricing-features">
+        <div class="pricing-feature">✓ Unlimited recommendations</div>
+        <div class="pricing-feature">✓ Premium soil analysis</div>
+        <div class="pricing-feature">✓ Unlimited crop history</div>
+        <div class="pricing-feature">✓ Comprehensive P&L tracking</div>
+        <div class="pricing-feature">✓ Premium analytics & insights</div>
+        <div class="pricing-feature">✓ PDF report export</div>
+        <div class="pricing-feature">✓ Priority phone support</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pricing-faq">
+    <div class="section-tag" style="margin:0 auto 12px">❓ Questions?</div>
+    <h2 class="section-title" style="text-align:center">Pricing FAQs</h2>
+    <div style="max-width:650px;margin:0 auto">
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">Can I upgrade or downgrade anytime? <span class="faq-arrow">⌄</span></div><div class="faq-a">Yes! You can upgrade or downgrade your plan at any time. Changes take effect on your next billing cycle. No long-term commitment required.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">Is there a free trial for Plus and Pro? <span class="faq-arrow">⌄</span></div><div class="faq-a">The Free plan has all the essentials. For Plus and Pro, we offer a 7-day trial after signup. Cancel anytime without penalties.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">What payment methods are accepted? <span class="faq-arrow">⌄</span></div><div class="faq-a">We accept all major Indian payment methods including UPI, credit/debit cards, net banking, and digital wallets. Payments are secure and encrypted.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">Do you offer discounts for yearly subscriptions? <span class="faq-arrow">⌄</span></div><div class="faq-a">Yes! Subscribe yearly and save 20% on Plus or Pro plans. Contact support for bulk organization pricing.</div></div>
+      <div class="faq-item" onclick="this.classList.toggle('open')"><div class="faq-q">What happens if I cancel my subscription? <span class="faq-arrow">⌄</span></div><div class="faq-a">You'll retain access until the end of your billing period. Your data remains saved. You can resubscribe anytime without losing information.</div></div>
+    </div>
+  </div>
+
   <footer>
     <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:5px">🌱 AgriMind</div>
     <div>MCA 2026 Major · Crop Recommendation System</div>
@@ -519,6 +616,8 @@
 
 <!-- TOAST -->
 <div id="toast" style="display:none" class="toast"></div>
+
+<!-- ══════ SUBCRIPTIONS ═════════ -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="script.js"></script>
