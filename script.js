@@ -461,9 +461,13 @@ function saveLiveLocationToProfile(place){
   if(idx>-1){users[idx]=S.user;saveUsers(users);}
   saveSession(S.user);
 }
-function formatOsmPlace(data){
+function formatOsmPlace(data){  
   var a=data.address||{};
+  
+  console.log("ADDRESS:", a);
   var city=a.city||a.town||a.village||a.municipality||a.county||a.state_district||a.suburb||'';
+  console.log("CITY CHOSEN:", city);
+
   var state=a.state||a.region||'';
   var country=a.country||'';
   var parts=[city,state,country].filter(Boolean);
