@@ -368,3 +368,18 @@ footer{background:var(--green);color:rgba(255,255,255,.75);text-align:center;pad
   background:#222;
   color:#e8f5e9;
 }
+
+.styled-input:disabled{
+  background:#dcdcdc;
+  color:#555;
+  cursor:not-allowed;
+  font-weight:600;
+  opacity:1;
+}
+
+[data-theme="dark"] .styled-input:disabled{
+  background:#2f2f2f;
+  color:#bdbdbd;
+  border-color:#444;
+  opacity:1;
+}

@@ -491,10 +491,18 @@ function fetchLiveLocation(){
         updateDashboard();
       })
       .catch(function(err){
-        console.error(err);
-        document.getElementById('location-name').textContent='Coordinates found';
-        setLocationStatus('Coordinates loaded, but city/state lookup failed.',true);
-      });
+        console.error("OSM ERROR:", err);
+
+        document.getElementById('location-name').textContent =
+          'Coordinates found';
+
+        setLocationStatus(
+          'Coordinates loaded, but city/state lookup failed.',
+          true
+        );
+
+        alert(err);
+      });        
   },function(err){
     var msg='Location permission was denied or unavailable.';
     if(err.code===err.POSITION_UNAVAILABLE)msg='Your device could not provide a location.';
@@ -784,7 +792,7 @@ locationInput.addEventListener(
 
       const name = place.display_name.split(",").slice(0,2).join(", ");
 
-item.textContent = name;
+      item.textContent = name;
 
       item.className =
         "location-item";
@@ -794,6 +802,10 @@ item.textContent = name;
         locationInput.value = place.display_name;
 
         suggestionBox.innerHTML = "";
+
+          // unlock old values first
+        document.getElementById("f-region").disabled = false;
+        document.getElementById("f-district").disabled = false;
 
         try {
 
@@ -808,8 +820,8 @@ item.textContent = name;
           console.log(details);
           console.log(addr);
 
-          document.getElementById("f-region").readOnly = false;
-          document.getElementById("f-district").readOnly = false;
+          document.getElementById("f-region").disabled = true;
+          document.getElementById("f-district").disabled = true;
 
           document.getElementById("f-region").value =
             addr.state || "";
