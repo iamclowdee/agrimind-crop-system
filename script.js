@@ -789,11 +789,28 @@ item.textContent = name;
       item.className =
         "location-item";
 
-      item.onclick = () => {
+      item.onclick = async () => {
 
         locationInput.value = place.display_name;
 
         suggestionBox.innerHTML = "";
+
+        const detailsResponse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${place.lat}&lon=${place.lon}`
+        );
+
+        const details = await detailsResponse.json();
+
+        const addr = details.address || {};
+
+        document.getElementById("f-district").value =
+          addr.state_district ||
+          addr.county ||
+          "";
+
+        document.getElementById("f-region").value =
+          addr.state ||
+          "";
 
         fetchWeather(
           place.lat,
@@ -813,7 +830,7 @@ async function fetchWeather(lat, lon){
   try{
 
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation`
     );
 
     const data = await response.json();
@@ -823,6 +840,9 @@ async function fetchWeather(lat, lon){
 
     document.getElementById("f-hum").value =
       Math.round(data.current.relative_humidity_2m);
+
+    document.getElementById("f-rain").value =
+      Math.round(data.current.precipitation);
 
   }
 
