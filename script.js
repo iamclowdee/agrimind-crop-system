@@ -158,7 +158,16 @@ function updateMetrics(){
   var mRec=document.getElementById('m-rec'),mRecSub=document.getElementById('m-rec-sub');
   var mProfit=document.getElementById('m-profit'),mProfitSub=document.getElementById('m-profit-sub');
   var mSoil=document.getElementById('m-soil'),mSoilSub=document.getElementById('m-soil-sub');
-  if(S.data.result){mRec.className='metric-val';mRec.style.fontSize='16px';mRec.textContent=S.data.result.crop.name.split(' ')[0];mRecSub.textContent=S.data.result.crop.confidence+'% match';}
+  if(S.data.result){
+    mRec.className='metric-val';
+    mRec.style.fontSize='16px';
+
+    mRec.textContent =
+      S.data.result.crop.name || '—';
+
+    mRecSub.textContent =
+      (S.data.result.crop.confidence || 0) + '% match';
+  }
   else{mRec.className='metric-null';mRec.textContent='—';mRecSub.textContent='No recommendation yet';}
   var completed=S.data.history.filter(function(e){return e.completed;});
   if(completed.length>0){var p=completed.reduce(function(s,e){return s+(e.revenue-e.investment);},0);mProfit.className='metric-val';mProfit.style.fontSize='18px';mProfit.textContent='₹'+Math.abs(p).toLocaleString('en-IN');mProfitSub.textContent=p>=0?'↑ Net profit':'↓ Net loss';}
@@ -218,16 +227,11 @@ function getRecommendation(){
   'f-hum',
   'f-ph',
   'f-rain',
-
   'f-soil-moisture',
   'f-organic-carbon',
   'f-electrical-conductivity',
-
   'f-season',
   'f-soil-color',
-  'f-region',
-  'f-district',
-
   'f-area'
   ];
   var missing=fields.some(function(id){return !document.getElementById(id).value;});
@@ -250,10 +254,6 @@ function getRecommendation(){
   var season =  document.getElementById('f-season').value;
 
   var soil_color =  document.getElementById('f-soil-color').value;
-
-  var region =  document.getElementById('f-region').value;
-
-  var district_name = document.getElementById('f-district').value;
   
   fetch("http://127.0.0.1:5000/predict", { //API call starts here for reference
   method: "POST",
@@ -274,9 +274,7 @@ function getRecommendation(){
     electrical_conductivity: electrical_conductivity,
 
     season: season,
-    soil_color: soil_color,
-    region: region,
-    district_name: district_name
+    soil_color: soil_color
   })
 })
 
@@ -285,6 +283,7 @@ function getRecommendation(){
 .then(data => {
 
     console.log(data);
+    console.log("Crop returned:", data.recommended_crop);
 
     const info = cropInfo[data.recommended_crop] || {
     emoji: "🌱",
@@ -757,18 +756,15 @@ function closeMobileSidebar(){document.getElementById('mobile-overlay').style.di
 //  INIT 
 (function(){
   var session=getSession();
+
   if(session){
-    S.user=session;loadUserData();
+    S.user=session;
+    loadUserData();
     updateNavForUser();
   } else {
     updateNavForGuest();
   }
-  // restore form if result exists
-  if(S.data.result){
-    var r=S.data.result;
-    ['n','p','k','temp','hum','ph','rain','area'].forEach(function(f){var el=document.getElementById('f-'+f);if(el)el.value=r[f]||'';});
-    var soil=document.getElementById('f-soil');if(soil)soil.value=r.soil||'';
-  }
+
 })();
 
   //Crop Metadata
