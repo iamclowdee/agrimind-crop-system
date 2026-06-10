@@ -6,7 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import (accuracy_score, classification_report)
 
 df = pd.read_csv("data/master_agriculture_dataset (1).csv")
 
@@ -23,6 +23,12 @@ print("Filtered rows:", len(df))
 print("\nRemaining Crops:")
 print(df["crop"].value_counts())
 
+df["np_ratio"] = df["nitrogen"] / (df["phosphorus"] + 1)
+
+df["nk_ratio"] = df["nitrogen"] / (df["potassium"] + 1)
+
+df["pk_ratio"] = df["phosphorus"] / (df["potassium"] + 1)
+
 numeric_features = [
     "nitrogen",
     "phosphorus",
@@ -33,14 +39,16 @@ numeric_features = [
     "rainfall",
     "soil_moisture",
     "organic_carbon",
-    "electrical_conductivity"
+    "electrical_conductivity",
+    "np_ratio",
+    "nk_ratio",
+    "pk_ratio"
 ]
 
 categorical_features = [
     "season",
-    "soil_color",
-    "region",
-    "district_name"
+    "soil_color"
+    
 ]
 
 X = df[numeric_features + categorical_features]
@@ -64,11 +72,11 @@ model = Pipeline([
     (
     "classifier",
         XGBClassifier(
-            n_estimators=500,
-            max_depth=8,
-            learning_rate=0.05,
-            subsample=0.8,
-            colsample_bytree=0.8,
+            n_estimators=800,
+            max_depth=10,
+            learning_rate=0.03,
+            subsample=0.9,
+            colsample_bytree=0.9,
             random_state=42,
             tree_method="hist",
             eval_metric="mlogloss"
@@ -91,6 +99,19 @@ predictions = model.predict(X_test)
 accuracy = accuracy_score(y_test, predictions)
 
 print(f"Accuracy: {accuracy * 100:.2f}%")
+
+print(
+    classification_report(
+        y_test,
+        predictions,
+        zero_division=0
+    )
+)
+
+joblib.dump(
+    model,
+    "model/crop_model_final.pkl"
+)
 
 joblib.dump(
     label_encoder,
