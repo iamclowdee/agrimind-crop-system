@@ -4,13 +4,26 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import pandas as pd
+import os
+import sys
 
 app = Flask(__name__)
 CORS(app)
 
 # Load trained model once when server starts
-model = joblib.load("model/crop_model_v2.pkl")
+model_path = os.path.join(os.path.dirname(__file__), "model", "crop_model_v2.pkl")
 
+if not os.path.exists(model_path):
+    print(f"ERROR: Model file not found at {model_path}")
+    print("Please ensure the trained model file exists before running the server.")
+    sys.exit(1)
+
+try:
+    model = joblib.load(model_path)
+    print("✓ Model loaded successfully")
+except Exception as e:
+    print(f"ERROR: Failed to load model: {e}")
+    sys.exit(1)
 
 @app.route("/")
 def home():
@@ -25,7 +38,6 @@ def test_db():
         "status": "connected",
         "prediction_count": count
     })
-
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -78,4 +90,6 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.getenv("FLASK_PORT", 5000))
+    print(f"🚀 Starting AgriMind API on http://localhost:{port}")
+    app.run(debug=True, host="127.0.0.1", port=port)

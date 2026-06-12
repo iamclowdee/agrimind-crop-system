@@ -1,22 +1,12 @@
 {
-  "name": "backend",
+  "name": "agrimind-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Python Flask backend for AgriMind - do not use Node.js dependencies",
+  "main": "app.py",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "note": "This is a Python project. Use 'pip install -r requirements.txt' and 'python app.py' to run."
   },
-  "keywords": [],
+  "keywords": ["agriculture", "crop-recommendation", "ml", "flask"],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongoose": "^9.6.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+  "license": "ISC"
 }
