@@ -10,20 +10,33 @@ import sys
 app = Flask(__name__)
 CORS(app)
 
-# Load trained model once when server starts
-model_path = joblib.load("model/crop_model_v2.pkl")
+# Load trained model and label encoder once when server starts
+model_path = os.path.join(os.path.dirname(__file__), "model", "crop_model_final.pkl")
+label_encoder_path = os.path.join(os.path.dirname(__file__), "model", "crop_label_encoder.pkl")
+
+model = None
+label_encoder = None
 
 if not os.path.exists(model_path):
-    print(f"ERROR: Model file not found at {model_path}")
-    print("Please ensure the trained model file exists before running the server.")
-    sys.exit(1)
+    print(f"⚠️  Model file not found at: {model_path}")
+    print("Note: Predictions will not work until the trained model is placed in the model/ directory.")
+else:
+    try:
+        model = joblib.load(model_path)
+        print("✓ Model loaded successfully")
+    except Exception as e:
+        print(f"ERROR: Failed to load model: {e}")
+        model = None
 
-try:
-    model = joblib.load(model_path)
-    print("✓ Model loaded successfully")
-except Exception as e:
-    print(f"ERROR: Failed to load model: {e}")
-    sys.exit(1)
+if not os.path.exists(label_encoder_path):
+    print(f"⚠️  Label encoder not found at: {label_encoder_path}")
+else:
+    try:
+        label_encoder = joblib.load(label_encoder_path)
+        print("✓ Label encoder loaded successfully")
+    except Exception as e:
+        print(f"ERROR: Failed to load label encoder: {e}")
+        label_encoder = None
 
 @app.route("/")
 def home():
@@ -31,16 +44,32 @@ def home():
 
 @app.route("/test-db")
 def test_db():
-
-    count = predictions_collection.count_documents({})
-
-    return jsonify({
-        "status": "connected",
-        "prediction_count": count
-    })
+    if predictions_collection is None:
+        return jsonify({
+            "status": "disconnected",
+            "message": "MongoDB not configured. Set MONGO_URI in .env file."
+        }), 503
+    
+    try:
+        count = predictions_collection.count_documents({})
+        return jsonify({
+            "status": "connected",
+            "prediction_count": count
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "error": str(e)
+        }), 503
 
 @app.route("/predict", methods=["POST"])
 def predict():
+
+    if model is None or label_encoder is None:
+        return jsonify({
+            "success": False,
+            "error": "Model or label encoder not loaded. Please ensure both files exist in backend/model/"
+        }), 503
 
     try:
         data = request.json
@@ -113,7 +142,12 @@ def predict():
         "created_at": datetime.utcnow()
         }
 
-        # predictions_collection.insert_one(prediction_record)
+        # Try to save to MongoDB if available
+        if predictions_collection is not None:
+            try:
+                predictions_collection.insert_one(prediction_record)
+            except Exception as db_error:
+                print(f"Warning: Failed to save prediction to database: {db_error}")
 
         return jsonify({
             "success": True,

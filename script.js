@@ -25,6 +25,26 @@ function persistData(){
   saveUserData(S.user.email,{result:S.data.result,soilData:S.data.soilData,history:S.data.history});
 }
 
+//  BACKEND CONNECTION
+const BACKEND_API = "http://127.0.0.1:5000";
+var backendStatus = false;
+
+function checkBackendConnection(){
+  fetch(BACKEND_API + "/")
+    .then(r => r.text())
+    .then(data => {
+      backendStatus = true;
+      console.log("✓ Backend connected:", data);
+    })
+    .catch(e => {
+      backendStatus = false;
+      console.warn("⚠️ Backend not available. Make sure Flask is running: python backend/app.py");
+    });
+}
+
+// Check backend on page load
+window.addEventListener('load', checkBackendConnection);
+
 //  THEME
 var isDark=false;
 function toggleTheme(){
@@ -255,7 +275,7 @@ function getRecommendation(){
 
   var soil_color =  document.getElementById('f-soil-color').value;
   
-  fetch("http://127.0.0.1:5000/predict", { //API call starts here for reference
+  fetch(BACKEND_API + "/predict", { //API call to Flask backend
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -283,6 +303,12 @@ function getRecommendation(){
 .then(data => {
 
     console.log(data);
+    
+    // Check if backend returned an error
+    if(!data.success){
+      throw new Error(data.error || "Prediction failed");
+    }
+
     console.log("Crop returned:", data.recommended_crop);
 
     const info = cropInfo[data.recommended_crop] || {
@@ -302,7 +328,8 @@ function getRecommendation(){
     season: info.season,
     seasonType: info.seasonType,
     duration: info.duration,
-    tips: info.tips
+    tips: info.tips,
+    topRecommendations: data.top_recommendations || []
   };
 
   S.data.result = {
@@ -339,10 +366,10 @@ function getRecommendation(){
 
   console.error(error);
 
-  alert("Prediction failed. Is Flask running?");
-
   btn.innerHTML = '🌾 Get Recommendation';
   btn.disabled = false;
+
+  alert("❌ Prediction failed: " + (error.message || "Is Flask running at http://localhost:5000?"));
 });
 }
 function renderResultPage(crop){
@@ -819,6 +846,266 @@ function closeMobileSidebar(){document.getElementById('mobile-overlay').style.di
       "Maintain weed-free fields.",
       "Irrigate during tasseling.",
       "Monitor stem borer attacks."
+    ]
+  },
+
+  Sugarcane: {
+    emoji: "🍬",
+    season: "Year-round",
+    seasonType: "Cash Crop",
+    duration: "12-18 Months",
+    tips: [
+      "Plant in rows for better management.",
+      "Use green manuring for soil fertility.",
+      "Monitor for borer infestation.",
+      "Harvest at proper maturity stage."
+    ]
+  },
+
+  Soybean: {
+    emoji: "🌱",
+    season: "Kharif",
+    seasonType: "Oil Crop",
+    duration: "95-120 Days",
+    tips: [
+      "Inoculate seeds with Rhizobium.",
+      "Ensure good drainage.",
+      "Monitor fungal diseases.",
+      "Harvest when pods turn brown."
+    ]
+  },
+
+  Pulses: {
+    emoji: "🫘",
+    season: "Rabi",
+    seasonType: "Legume Crop",
+    duration: "90-120 Days",
+    tips: [
+      "Rotate crops to reduce soil-borne diseases.",
+      "Use certified seeds.",
+      "Monitor pod borers.",
+      "Harvest when plants turn brown."
+    ]
+  },
+
+  Groundnut: {
+    emoji: "🥜",
+    season: "Kharif/Rabi",
+    seasonType: "Oil Crop",
+    duration: "90-130 Days",
+    tips: [
+      "Ensure well-drained soil.",
+      "Monitor for leaf spots.",
+      "Harvest by digging the whole plant.",
+      "Dry pods before storage."
+    ]
+  },
+
+  Sunflower: {
+    emoji: "🌻",
+    season: "Kharif/Rabi",
+    seasonType: "Oil Crop",
+    duration: "90-100 Days",
+    tips: [
+      "Maintain proper plant spacing.",
+      "Avoid waterlogging.",
+      "Monitor bird attacks.",
+      "Harvest when back of head turns brown."
+    ]
+  },
+
+  Mustard: {
+    emoji: "🌾",
+    season: "Rabi",
+    seasonType: "Oil Crop",
+    duration: "90-110 Days",
+    tips: [
+      "Use well-drained fields.",
+      "Monitor for aphids and sawfly.",
+      "Apply phosphorus fertilizer.",
+      "Harvest when pods turn brown."
+    ]
+  },
+
+  Tomato: {
+    emoji: "🍅",
+    season: "Year-round",
+    seasonType: "Vegetable Crop",
+    duration: "60-90 Days",
+    tips: [
+      "Support plants with stakes.",
+      "Monitor for early and late blight.",
+      "Ensure consistent watering.",
+      "Harvest when fruits turn red."
+    ]
+  },
+
+  Onion: {
+    emoji: "🧅",
+    season: "Rabi",
+    seasonType: "Vegetable Crop",
+    duration: "120-150 Days",
+    tips: [
+      "Use well-drained soil.",
+      "Monitor for purple blotch disease.",
+      "Ensure proper bulb formation.",
+      "Cure bulbs in sun for 2-3 weeks."
+    ]
+  },
+
+  Potato: {
+    emoji: "🥔",
+    season: "Rabi",
+    seasonType: "Tuber Crop",
+    duration: "90-120 Days",
+    tips: [
+      "Use certified seed potatoes.",
+      "Maintain adequate moisture.",
+      "Monitor for late blight.",
+      "Harvest when leaves dry."
+    ]
+  },
+
+  Cabbage: {
+    emoji: "🥬",
+    season: "Rabi",
+    seasonType: "Vegetable Crop",
+    duration: "90-120 Days",
+    tips: [
+      "Space plants properly.",
+      "Maintain consistent moisture.",
+      "Monitor for cabbage worm.",
+      "Harvest when heads are firm."
+    ]
+  },
+
+  Carrot: {
+    emoji: "🥕",
+    season: "Rabi",
+    seasonType: "Vegetable Crop",
+    duration: "70-80 Days",
+    tips: [
+      "Use loose, well-tilled soil.",
+      "Thin seedlings for proper growth.",
+      "Monitor for carrot rust fly.",
+      "Harvest when roots are orange."
+    ]
+  },
+
+  Coconut: {
+    emoji: "🥥",
+    season: "Year-round",
+    seasonType: "Perennial Crop",
+    duration: "Varies",
+    tips: [
+      "Plant in well-drained sandy soil.",
+      "Ensure high rainfall area.",
+      "Space palms 8-10 meters apart.",
+      "Maintain weed-free plantation."
+    ]
+  },
+
+  Coffee: {
+    emoji: "☕",
+    season: "Year-round",
+    seasonType: "Plantation Crop",
+    duration: "3-4 Years to Maturity",
+    tips: [
+      "Grow under shade trees.",
+      "Ensure well-distributed rainfall.",
+      "Monitor for leaf rust.",
+      "Harvest ripe cherries."
+    ]
+  },
+
+  Tea: {
+    emoji: "🍵",
+    season: "Year-round",
+    seasonType: "Plantation Crop",
+    duration: "3-4 Years to Maturity",
+    tips: [
+      "Maintain cool, misty climate.",
+      "Ensure acidic soil (pH 4.5-6.5).",
+      "Regular pruning required.",
+      "Pluck tender shoots regularly."
+    ]
+  },
+
+  Mango: {
+    emoji: "🥭",
+    season: "March-June",
+    seasonType: "Fruit Crop",
+    duration: "4-5 Days to Maturity",
+    tips: [
+      "Prune after harvest for aeration.",
+      "Apply balanced NPK before flowering.",
+      "Manage powdery mildew with sulphur.",
+      "Thin fruits for better quality."
+    ]
+  },
+
+  Apple: {
+    emoji: "🍎",
+    season: "June-October",
+    seasonType: "Temperate Fruit",
+    duration: "3-4 Years to Fruiting",
+    tips: [
+      "Plant in cool hill areas.",
+      "Ensure good air circulation.",
+      "Monitor for fire blight.",
+      "Harvest at proper maturity."
+    ]
+  },
+
+  Banana: {
+    emoji: "🍌",
+    season: "Year-round",
+    seasonType: "Fruit Crop",
+    duration: "9-12 Months",
+    tips: [
+      "Use disease-free suckers.",
+      "Ensure adequate water supply.",
+      "Support bunches with bamboo.",
+      "Harvest when fruits turn yellow."
+    ]
+  },
+
+  Grapes: {
+    emoji: "🍇",
+    season: "August-December",
+    seasonType: "Fruit Crop",
+    duration: "2-3 Years to Fruiting",
+    tips: [
+      "Prune for shape and size.",
+      "Manage powdery mildew regularly.",
+      "Use trellising for support.",
+      "Harvest when grapes soften."
+    ]
+  },
+
+  Papaya: {
+    emoji: "🧡",
+    season: "Year-round",
+    seasonType: "Fruit Crop",
+    duration: "9-12 Months",
+    tips: [
+      "Plant in well-drained soil.",
+      "Remove male plants.",
+      "Monitor for fruit flies.",
+      "Harvest when color develops."
+    ]
+  },
+
+  Peach: {
+    emoji: "🍑",
+    season: "June-August",
+    seasonType: "Temperate Fruit",
+    duration: "2-3 Years to Fruiting",
+    tips: [
+      "Plant in cool areas.",
+      "Monitor for leaf curl disease.",
+      "Thin fruits for size.",
+      "Harvest when soft to touch."
     ]
   }
 
