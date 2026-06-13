@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load trained model once when server starts
-model_path = os.path.join(os.path.dirname(__file__), "model", "crop_model_v2.pkl")
+model_path = joblib.load("model/crop_model_v2.pkl")
 
 if not os.path.exists(model_path):
     print(f"ERROR: Model file not found at {model_path}")
@@ -46,20 +46,59 @@ def predict():
         data = request.json
 
         features = pd.DataFrame([{
+
             "nitrogen": float(data["nitrogen"]),
             "phosphorus": float(data["phosphorus"]),
             "potassium": float(data["potassium"]),
             "temperature": float(data["temperature"]),
             "humidity": float(data["humidity"]),
             "ph": float(data["ph"]),
-            "rainfall": float(data["rainfall"])
+            "rainfall": float(data["rainfall"]),
+            "soil_moisture": float(data["soil_moisture"]),
+            "organic_carbon": float(data["organic_carbon"]),
+            "electrical_conductivity": float(data["electrical_conductivity"]),
+
+            "np_ratio":
+                float(data["nitrogen"]) /
+                (float(data["phosphorus"]) + 1),
+
+            "nk_ratio":
+                float(data["nitrogen"]) /
+                (float(data["potassium"]) + 1),
+
+            "pk_ratio":
+                float(data["phosphorus"]) /
+                (float(data["potassium"]) + 1),
+
+            "season": data["season"],
+            "soil_color": data["soil_color"]
+
         }])
 
-        prediction = model.predict(features)[0]
+        prediction_encoded = model.predict(features)[0]
+
+        prediction = label_encoder.inverse_transform(
+            [prediction_encoded]
+        )[0]
+
+        print("PREDICTION:", prediction)
 
         probabilities = model.predict_proba(features)[0]
 
-        confidence = round(max(probabilities) * 100, 2)
+        crop_names = label_encoder.classes_
+
+        top_predictions = sorted(
+            zip(crop_names, probabilities),
+            key=lambda x: x[1],
+            reverse=True
+        )[:5]
+
+        print("TOP 5 RECOMMENDATIONS")
+
+        for crop, prob in top_predictions:
+            print(crop,round(prob * 100, 2))
+
+        confidence = float(round(max(probabilities) * 100, 2))
 
         prediction_record = {
         "nitrogen": float(data["nitrogen"]),
@@ -74,12 +113,20 @@ def predict():
         "created_at": datetime.utcnow()
         }
 
-        predictions_collection.insert_one(prediction_record)
+        # predictions_collection.insert_one(prediction_record)
 
         return jsonify({
-        "success": True,
-        "recommended_crop": prediction,
-        "confidence": confidence
+            "success": True,
+            "recommended_crop": prediction,
+            "confidence": confidence,
+
+            "top_recommendations": [
+                {
+                    "crop": crop,
+                    "probability": float(round(prob * 100, 2))
+                }
+                for crop, prob in top_predictions
+            ]
         })
 
     except Exception as e:

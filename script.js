@@ -158,7 +158,16 @@ function updateMetrics(){
   var mRec=document.getElementById('m-rec'),mRecSub=document.getElementById('m-rec-sub');
   var mProfit=document.getElementById('m-profit'),mProfitSub=document.getElementById('m-profit-sub');
   var mSoil=document.getElementById('m-soil'),mSoilSub=document.getElementById('m-soil-sub');
-  if(S.data.result){mRec.className='metric-val';mRec.style.fontSize='16px';mRec.textContent=S.data.result.crop.name.split(' ')[0];mRecSub.textContent=S.data.result.crop.confidence+'% match';}
+  if(S.data.result){
+    mRec.className='metric-val';
+    mRec.style.fontSize='16px';
+
+    mRec.textContent =
+      S.data.result.crop.name || '—';
+
+    mRecSub.textContent =
+      (S.data.result.crop.confidence || 0) + '% match';
+  }
   else{mRec.className='metric-null';mRec.textContent='—';mRecSub.textContent='No recommendation yet';}
   var completed=S.data.history.filter(function(e){return e.completed;});
   if(completed.length>0){var p=completed.reduce(function(s,e){return s+(e.revenue-e.investment);},0);mProfit.className='metric-val';mProfit.style.fontSize='18px';mProfit.textContent='₹'+Math.abs(p).toLocaleString('en-IN');mProfitSub.textContent=p>=0?'↑ Net profit':'↓ Net loss';}
@@ -210,7 +219,21 @@ function pickCrop(n,p,k,temp,hum,ph){
 
 //  RECOMMENDATION 
 function getRecommendation(){
-  var fields=['f-n','f-p','f-k','f-temp','f-hum','f-ph','f-rain','f-area'];
+  var fields=[
+  'f-n',
+  'f-p',
+  'f-k',
+  'f-temp',
+  'f-hum',
+  'f-ph',
+  'f-rain',
+  'f-soil-moisture',
+  'f-organic-carbon',
+  'f-electrical-conductivity',
+  'f-season',
+  'f-soil-color',
+  'f-area'
+  ];
   var missing=fields.some(function(id){return !document.getElementById(id).value;});
   var errEl=document.getElementById('form-error');
   if(missing||!document.getElementById('f-soil').value){errEl.style.display='block';return;}
@@ -221,6 +244,16 @@ function getRecommendation(){
   var temp=+document.getElementById('f-temp').value,hum=+document.getElementById('f-hum').value,ph=+document.getElementById('f-ph').value;
   var rain=+document.getElementById('f-rain').value,area=+document.getElementById('f-area').value;
   var soil=document.getElementById('f-soil').value;
+  var soil_moisture =
+  +document.getElementById('f-soil-moisture').value;
+
+  var organic_carbon =  +document.getElementById('f-organic-carbon').value;
+
+  var electrical_conductivity =  +document.getElementById('f-electrical-conductivity').value;
+
+  var season =  document.getElementById('f-season').value;
+
+  var soil_color =  document.getElementById('f-soil-color').value;
   
   fetch("http://127.0.0.1:5000/predict", { //API call starts here for reference
   method: "POST",
@@ -234,7 +267,14 @@ function getRecommendation(){
     temperature: temp,
     humidity: hum,
     ph: ph,
-    rainfall: rain
+    rainfall: rain,
+
+    soil_moisture: soil_moisture,
+    organic_carbon: organic_carbon,
+    electrical_conductivity: electrical_conductivity,
+
+    season: season,
+    soil_color: soil_color
   })
 })
 
@@ -243,6 +283,7 @@ function getRecommendation(){
 .then(data => {
 
     console.log(data);
+    console.log("Crop returned:", data.recommended_crop);
 
     const info = cropInfo[data.recommended_crop] || {
     emoji: "🌱",
@@ -419,9 +460,13 @@ function saveLiveLocationToProfile(place){
   if(idx>-1){users[idx]=S.user;saveUsers(users);}
   saveSession(S.user);
 }
-function formatOsmPlace(data){
+function formatOsmPlace(data){  
   var a=data.address||{};
+  
+  console.log("ADDRESS:", a);
   var city=a.city||a.town||a.village||a.municipality||a.county||a.state_district||a.suburb||'';
+  console.log("CITY CHOSEN:", city);
+
   var state=a.state||a.region||'';
   var country=a.country||'';
   var parts=[city,state,country].filter(Boolean);
@@ -449,10 +494,18 @@ function fetchLiveLocation(){
         updateDashboard();
       })
       .catch(function(err){
-        console.error(err);
-        document.getElementById('location-name').textContent='Coordinates found';
-        setLocationStatus('Coordinates loaded, but city/state lookup failed.',true);
-      });
+        console.error("OSM ERROR:", err);
+
+        document.getElementById('location-name').textContent =
+          'Coordinates found';
+
+        setLocationStatus(
+          'Coordinates loaded, but city/state lookup failed.',
+          true
+        );
+
+        alert(err);
+      });        
   },function(err){
     var msg='Location permission was denied or unavailable.';
     if(err.code===err.POSITION_UNAVAILABLE)msg='Your device could not provide a location.';
@@ -606,6 +659,78 @@ function downloadPDF(){
   });
 }
 
+async function shareReport(){
+
+  if(!S.data.result){
+    showToast('⚠️ Submit the recommendation form first.');
+    return;
+  }
+
+  if(typeof html2pdf === 'undefined'){
+    showToast('⚠️ PDF library is still loading.');
+    return;
+  }
+
+  try{
+    showToast('📄 Generating PDF...');
+
+    var r=S.data.result;
+    var crop=r.crop;
+    var user=S.user||{};
+
+    var report=document.createElement('div');
+
+    report.style.width='760px';
+    report.style.padding='34px';
+    report.style.background='#ffffff';
+    report.style.color='#1A2E1A';
+    report.style.fontFamily='Plus Jakarta Sans, Arial, sans-serif';
+
+    report.innerHTML='AgriMind Report'; // temporary
+
+    document.body.appendChild(report);
+
+    const pdfBlob = await html2pdf()
+      .set({
+        margin:0.45,
+        filename:'AgriMind_Crop_Report.pdf',
+        image:{type:'jpeg',quality:0.98},
+        html2canvas:{scale:2,useCORS:true},
+        jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
+      })
+      .from(report)
+      .outputPdf('blob');
+
+    report.remove();
+
+    const file = new File(
+      [pdfBlob],
+      'AgriMind_Crop_Report.pdf',
+      { type:'application/pdf' }
+    );
+
+    if(
+      navigator.canShare &&
+      navigator.canShare({ files:[file] })
+    ){
+        await navigator.share({
+        title:'AgriMind Crop Report',
+        text:'Crop Recommendation Report',
+        files:[file]
+      });
+
+      showToast('✅ Report shared.');
+
+    }else{
+      showToast('⚠️ Sharing not supported on this device.');
+    }
+
+  }catch(err){
+    console.error(err);
+    showToast('⚠️ Failed to share PDF.');
+  }
+}
+
 // Password strength
 function checkStrength(){
   var pwd=document.getElementById('su-pwd').value;
@@ -631,18 +756,15 @@ function closeMobileSidebar(){document.getElementById('mobile-overlay').style.di
 //  INIT 
 (function(){
   var session=getSession();
+
   if(session){
-    S.user=session;loadUserData();
+    S.user=session;
+    loadUserData();
     updateNavForUser();
   } else {
     updateNavForGuest();
   }
-  // restore form if result exists
-  if(S.data.result){
-    var r=S.data.result;
-    ['n','p','k','temp','hum','ph','rain','area'].forEach(function(f){var el=document.getElementById('f-'+f);if(el)el.value=r[f]||'';});
-    var soil=document.getElementById('f-soil');if(soil)soil.value=r.soil||'';
-  }
+
 })();
 
   //Crop Metadata
@@ -701,3 +823,130 @@ function closeMobileSidebar(){document.getElementById('mobile-overlay').style.di
   }
 
 };
+
+// Search Location Recommendation
+const locationInput =
+  document.getElementById("location-search");
+
+const suggestionBox =
+  document.getElementById("location-suggestions");
+
+if(locationInput){
+
+locationInput.addEventListener(
+  "input",
+  async function(){
+
+    const query = this.value.trim();
+    console.log("typing", query);
+
+    if(query.length < 3){
+      suggestionBox.innerHTML = "";
+      return;
+    }
+
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5`,
+      {
+        headers: {
+          "Accept": "application/json"
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    suggestionBox.innerHTML = "";
+
+    data.forEach(place => {
+
+      const item = document.createElement("div");
+
+      const name = place.display_name.split(",").slice(0,2).join(", ");
+
+      item.textContent = name;
+
+      item.className =
+        "location-item";
+
+      item.onclick = async () => {
+
+        locationInput.value = place.display_name;
+
+        suggestionBox.innerHTML = "";
+
+          // unlock old values first
+        document.getElementById("f-region").disabled = false;
+        document.getElementById("f-district").disabled = false;
+
+        try {
+
+          const detailsResponse = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${place.lat}&lon=${place.lon}`
+          );
+
+          const details = await detailsResponse.json();
+
+          const addr = details.address || {};
+          
+          console.log(details);
+          console.log(addr);
+
+          document.getElementById("f-region").disabled = true;
+          document.getElementById("f-district").disabled = true;
+
+          document.getElementById("f-region").value =
+            addr.state || "";
+          document.getElementById("f-district").value =
+            addr.state_district ||
+            addr.county ||
+            "";
+
+          document.getElementById("f-region").readOnly = true;
+          document.getElementById("f-district").readOnly = true;
+
+          document.getElementById("f-region").classList.add("autofilled");
+          document.getElementById("f-district").classList.add("autofilled");
+
+        }
+        catch(error){
+
+          console.error("Location details error:", error);
+
+        }
+
+        fetchWeather(
+          place.lat,
+          place.lon
+        );
+      };
+
+      suggestionBox.appendChild(item);
+    });
+  }
+);
+}
+
+// Weather Function
+async function fetchWeather(lat, lon){
+
+  try{
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation`
+    );
+
+    const data = await response.json();
+
+    document.getElementById("f-temp").value =
+      Math.round(data.current.temperature_2m);
+    document.getElementById("f-hum").value =
+      Math.round(data.current.relative_humidity_2m);
+    document.getElementById("f-rain").value =
+      Math.round(data.current.precipitation);
+  }
+
+  catch(error){
+    console.error(error);
+    alert("Weather fetch failed");
+  }
+}
