@@ -1,0 +1,54 @@
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(254,252,243,.93);backdrop-filter:var(--blur);border-bottom:1px solid var(--border);transition:background .3s}
+[data-theme="dark"] .nav{background:rgba(26,26,26,.95)}
+.nav-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;color:var(--green);cursor:pointer}
+.nav-logo-icon{background:var(--green);color:#fff;width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.nav-links{display:flex;gap:2px}
+.nav-link{padding:7px 13px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--text2);background:none;border:none;font-family:inherit}
+.nav-link:hover{background:var(--green4);color:var(--green)}
+.nav-right{display:flex;align-items:center;gap:8px}
+
+/* DARK MODE TOGGLE */
+.theme-toggle{width:36px;height:36px;border-radius:8px;background:var(--green4);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;flex-shrink:0}
+.theme-toggle:hover{background:var(--green3);transform:scale(1.05)}
+
+.nav-cta{background:var(--green);color:#fff;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+.nav-cta:hover{background:#1e5035}
+.nav-link-auth{padding:7px 13px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);background:none;border:none;font-family:inherit;transition:all .2s}
+.nav-link-auth:hover{background:var(--green4);color:var(--green)}
+
+/* USER AVATAR DROPDOWN */
+.avatar-wrap{position:relative}
+.user-avatar-nav{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;cursor:pointer;border:none;font-family:inherit;transition:all .2s}
+.user-avatar-nav:hover{transform:scale(1.05);box-shadow:var(--shadow)}
+.avatar-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--dropdown-bg);border:1px solid var(--border);border-radius:12px;padding:8px;min-width:190px;box-shadow:var(--shadow2);z-index:200;animation:fadeUp .2s ease}
+.avatar-dropdown-user{padding:10px 12px 10px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.avatar-dropdown-name{font-size:14px;font-weight:700;color:var(--text)}
+.avatar-dropdown-email{font-size:11px;color:var(--text3);margin-top:2px}
+.dd-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+.dd-item:hover{background:var(--green4);color:var(--green)}
+.dd-item.danger{color:#C0392B}
+.dd-item.danger:hover{background:rgba(192,57,43,.08);color:#C0392B}
+
+/* HAMBURGER */
+.hamburger{display:none;width:36px;height:36px;border-radius:8px;background:var(--green4);border:1px solid var(--border);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.hamburger span{width:18px;height:2px;background:var(--green);border-radius:2px;transition:all .3s}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;animation:fadeIn .2s ease}
+.mobile-sidebar{position:fixed;top:0;left:0;bottom:0;width:240px;background:linear-gradient(180deg,#2D6A4F,#1e5035);z-index:160;padding:20px 14px;animation:slideIn .25s ease;overflow-y:auto}
+[data-theme="dark"] .mobile-sidebar{background:linear-gradient(180deg,#1e3d2e,#152b20)}
+
+.sidebar-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,.68);cursor:pointer;transition:all .2s;margin-bottom:2px;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+.sidebar-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.sidebar-item.active{background:rgba(255,255,255,.15);color:#fff}
+.sidebar-item .icon{font-size:15px;width:17px;text-align:center}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .dash-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .dash-grid{grid-template-columns:1fr}
+  .rec-form{grid-template-columns:1fr}
+  .metrics-row{grid-template-columns:1fr 1fr}
+  .result-hero{flex-direction:column;text-align:center}
+}

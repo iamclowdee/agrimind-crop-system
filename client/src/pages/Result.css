@@ -1,0 +1,255 @@
+.result-container{
+
+    max-width:900px;
+
+    margin:auto;
+
+    padding:30px 20px;
+
+}
+
+.result-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:20px;
+
+}
+
+.result-hero{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:25px;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+
+        135deg,
+
+        rgba(82,183,136,.12),
+
+        rgba(148,213,178,.18)
+
+    );
+
+    border:1px solid rgba(82,183,136,.15);
+
+    margin-bottom:20px;
+
+}
+
+.crop-emoji{
+
+    font-size:60px;
+
+}
+
+.hero-content{
+
+    flex:1;
+
+}
+
+.hero-label{
+
+    text-transform:uppercase;
+
+    font-size:11px;
+
+    color:#777;
+
+    letter-spacing:.08em;
+
+    font-weight:700;
+
+}
+
+.crop-name{
+
+    font-size:36px;
+
+    font-weight:700;
+
+    color:#2D6A4F;
+
+    margin:8px 0 15px;
+
+}
+
+.confidence-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+}
+
+.confidence-bar-bg{
+
+    width:100%;
+
+    height:10px;
+
+    border-radius:30px;
+
+    background:#ddd;
+
+    overflow:hidden;
+
+}
+
+.confidence-bar{
+
+    height:100%;
+
+    background:linear-gradient(
+
+        90deg,
+
+        #6FCF97,
+
+        #2D6A4F
+
+    );
+
+}
+
+.prediction-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:15px;
+
+}
+
+.prediction-table th{
+
+    text-align:left;
+
+    padding:12px;
+
+}
+
+.prediction-table td{
+
+    padding:12px;
+
+    border-top:1px solid #eee;
+
+}
+
+.result-actions{
+
+    display:flex;
+
+    gap:15px;
+
+    justify-content:center;
+
+    margin-top:25px;
+
+    flex-wrap:wrap;
+
+}
+
+.summary-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:20px;
+
+    margin-top:20px;
+
+}
+
+.summary-grid div{
+
+    background:var(--green4);
+
+    border-radius:14px;
+
+    padding:16px;
+
+}
+
+.summary-grid strong{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:var(--green);
+
+}
+
+
+
+.tip-list{
+
+    list-style:none;
+
+    padding:0;
+
+    margin-top:15px;
+
+}
+
+.tip-item{
+
+    padding:10px 0;
+
+    border-bottom:1px solid var(--border2);
+
+}
+
+.tip-item:last-child{
+
+    border-bottom:none;
+
+}
+
+.season-pills{
+
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:16px;
+
+}
+
+.season-pill{
+
+    padding:6px 14px;
+
+    border-radius:50px;
+
+    background:rgba(82,183,136,.15);
+
+    color:var(--green);
+
+    font-size:12px;
+
+    font-weight:600;
+
+}

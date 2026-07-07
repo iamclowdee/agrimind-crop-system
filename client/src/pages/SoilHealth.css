@@ -1,0 +1,444 @@
+/* =========================================================
+   SOIL HEALTH PAGE
+========================================================= */
+
+.soil-page{
+    min-height:100vh;
+    padding:40px 20px;
+    background:var(--bg);
+    transition:background .3s ease;
+}
+
+.soil-container{
+    max-width:1150px;
+    margin:auto;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.soil-header{
+    margin-bottom:28px;
+}
+
+.soil-header h1{
+    margin:0;
+    font-size:34px;
+    font-weight:800;
+    color:var(--text);
+}
+
+.soil-header p{
+    margin-top:8px;
+    font-size:15px;
+    line-height:1.6;
+    color:var(--text3);
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button{
+
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    border:none;
+    outline:none;
+
+    padding:11px 22px;
+
+    border-radius:14px;
+
+    background:var(--card);
+
+    border:1px solid var(--border2);
+
+    color:var(--green);
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    transition:.25s;
+
+    margin-bottom:24px;
+
+}
+
+.back-button:hover{
+
+    background:var(--green4);
+
+    transform:translateY(-2px);
+
+    box-shadow:var(--shadow);
+
+}
+
+/* =========================================================
+   GRIDS
+========================================================= */
+
+.soil-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:18px;
+
+    margin-bottom:22px;
+
+}
+
+.dash-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+
+    gap:18px;
+
+}
+
+/* =========================================================
+   SOIL CARD
+========================================================= */
+
+.soil-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border2);
+
+    border-radius:18px;
+
+    padding:22px;
+
+    text-align:center;
+
+    transition:.25s;
+
+    box-shadow:var(--shadow);
+
+}
+
+.soil-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:rgba(82,183,136,.35);
+
+}
+
+/* =========================================================
+   RADIAL
+========================================================= */
+
+.radial-wrap{
+
+    position:relative;
+
+    width:92px;
+
+    height:92px;
+
+    margin:auto;
+
+    margin-bottom:15px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            var(--card) 58%,
+            var(--green4) 100%
+        );
+
+}
+
+.radial-wrap svg{
+
+    transform:rotate(-90deg);
+
+}
+
+.radial-center{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.radial-val{
+
+    font-size:24px;
+
+    font-weight:800;
+
+    color:var(--green);
+
+}
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.nutrient-name{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+    margin-bottom:8px;
+
+}
+
+.nutrient-status{
+
+    display:inline-block;
+
+    padding:6px 13px;
+
+    border-radius:50px;
+
+    font-size:11px;
+
+    font-weight:700;
+
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-good{
+
+    background:rgba(82,183,136,.15);
+
+    color:var(--green);
+
+}
+
+.status-low{
+
+    background:rgba(224,122,47,.15);
+
+    color:var(--orange);
+
+}
+
+.status-high{
+
+    background:rgba(214,40,40,.15);
+
+    color:#D62828;
+
+}
+
+/* =========================================================
+   COMMON CARD
+========================================================= */
+
+.card{
+
+    background:var(--card);
+
+    border-radius:18px;
+
+    border:1px solid var(--border2);
+
+    padding:24px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.card-title{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+    margin-bottom:6px;
+
+}
+
+.card-sub{
+
+    font-size:13px;
+
+    color:var(--text3);
+
+    margin-bottom:18px;
+
+}
+
+/* =========================================================
+   PROGRESS BAR
+========================================================= */
+
+.prog-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:14px;
+
+}
+
+.prog-label{
+
+    width:90px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    color:var(--text2);
+
+}
+
+.prog-bg{
+
+    flex:1;
+
+    height:10px;
+
+    border-radius:999px;
+
+    background:var(--beige2);
+
+    overflow:hidden;
+
+}
+
+.prog-fill{
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--green2),
+            var(--green)
+        );
+
+    transition:width .6s ease;
+
+}
+
+.prog-val{
+
+    width:38px;
+
+    text-align:right;
+
+    font-weight:700;
+
+    color:var(--text);
+
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.soil-loading{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:var(--green);
+
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+    .dash-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .soil-page{
+
+        padding:24px 16px;
+
+    }
+
+    .soil-header h1{
+
+        font-size:28px;
+
+    }
+
+    .soil-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:520px){
+
+    .soil-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .back-button{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+    .soil-header h1{
+
+        font-size:24px;
+
+    }
+
+}
